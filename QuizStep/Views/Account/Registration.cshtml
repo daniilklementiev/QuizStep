@@ -1,0 +1,46 @@
+@model QuizStep.Models.UserModels.UserRegistrationModel
+@{
+    ViewData["Title"] = "Registrations";
+}
+
+<div class="wrapper">
+    <div class="logo">
+        <img src="https://avatars.githubusercontent.com/u/70135739?s=280&v=4" alt="">
+    </div>
+    <div class="text-center mt-4 name">
+        ITStep Quiz
+    </div>
+    <form class="p-3 mt-3">
+        <div class="form-field d-flex align-items-center">
+            <span class="far fa-user"></span>
+            <input type="text" name="userName" id="userName" placeholder="Username">
+        </div>
+        <div class="form-field d-flex align-items-center">
+                    <span class="far fa-address-book"></span>
+                    <input type="email" name="email" id="email" placeholder="Email">
+                </div>
+        <div class="form-field d-flex align-items-center">
+            <span class="fas fa-key"></span>
+            <input type="password" name="password" id="pwd" placeholder="Password">
+        </div>
+        <div class="form-field d-flex align-items-center">
+            <span class="fas fa-key"></span>
+            <input type="password" name="repeatPassword" id="repPwd" placeholder="Repeat password">
+        </div>
+        <div class="mb-3">
+            <span class="fas fa-upload"></span>
+            <label for="formFile" class="form-label">Avatar</label>
+            <input class="form-control" type="file" id="formFile">
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+          <label class="form-check-label" for="flexCheckDefault">
+              Я погоджуюся з <a asp-area="" asp-controller="Home" asp-action="Privacy">умовами використання</a>
+          </label>
+        </div>
+        <button type="submit" class="btn mt-3">Зареєструватися</button>
+    </form>
+    <div class="text-center fs-6">
+        <a asp-controller="Home" asp-action="Index"><span class="bi bi-arrow-right-square"></span> Авторизуватися</a>
+    </div>
+</div>

@@ -2,7 +2,25 @@
     ViewData["Title"] = "Authorization";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    
+<div class="wrapper">
+    <div class="logo">
+        <img src="https://avatars.githubusercontent.com/u/70135739?s=280&v=4" alt="">
+    </div>
+    <div class="text-center mt-4 name">
+        ITStep Quiz
+    </div>
+    <form class="p-3 mt-3">
+        <div class="form-field d-flex align-items-center">
+            <span class="far fa-user"></span>
+            <input type="text" name="userName" id="userName" placeholder="Username">
+        </div>
+        <div class="form-field d-flex align-items-center">
+            <span class="fas fa-key"></span>
+            <input type="password" name="password" id="pwd" placeholder="Password">
+        </div>
+        <button class="btn mt-3">Авторизуватися</button>
+    </form>
+    <div class="text-center fs-6">
+        <a href="#">Забули пароль?</a> чи <a asp-controller="Account" asp-action="Registration" style="font-weight: 300">Зареєструватися</a>
+    </div>
 </div>

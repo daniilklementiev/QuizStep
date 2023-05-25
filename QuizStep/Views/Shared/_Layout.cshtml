@@ -7,26 +7,29 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
     <link rel="stylesheet" href="~/QuizStep.styles.css" asp-append-version="true"/>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
 </head>
 <body>
 <header>
     <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
         <div class="container-fluid">
-            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">QuizStep</a>
+            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                <img src="https://poprofessii.in.ua/Multimedia/ProductImages/2020/3/20/113031_%D0%A8%D0%B0%D0%B3_%D0%9B%D0%AC%D0%B2%D0%BE%D0%B2.png" width="80rem" alt="ItStepUniversity logo"/>
+            </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                <ul class="navbar-nav flex-grow-1">
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                    </li>
-                </ul>
-            </div>
+            @* <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between"> *@
+            @*     <ul class="navbar-nav flex-grow-1"> *@
+            @*         <li class="nav-item"> *@
+            @*             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a> *@
+            @*         </li> *@
+            @*         <li class="nav-item"> *@
+            @*             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a> *@
+            @*         </li> *@
+            @*     </ul> *@
+            @* </div> *@
         </div>
     </nav>
 </header>

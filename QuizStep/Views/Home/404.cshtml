@@ -1,0 +1,65 @@
+@{
+    ViewData["Title"] = "404 - Сторінку не знайдено";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+     
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+    
+    .error-template {
+      text-align: center;
+      margin-top: 10%;
+    }
+    
+    .error-details {
+      font-size: 24px;
+      color: #646464;
+    }
+    
+    .error-actions {
+      margin-top: 30px;
+    }
+    
+    .btn {
+      background-color: #404040;
+      color: #fff;
+    }
+    
+    .btn:hover {
+      background-color: #232323;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="error-template">
+                <h1>Oops!</h1>
+                <h2>404 - Сторінку не знайдено</h2>
+                <div class="error-details">
+                    Нажаль, сторінку, яку ви шукаєте, не знайдено.
+                </div>
+                <div class="error-actions">
+                    <a href="/" class="btn btn-lg">
+                        <span class="glyphicon glyphicon-home"></span>
+                        На головну
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</body>
+</html>

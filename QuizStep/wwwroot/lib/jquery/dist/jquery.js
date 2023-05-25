@@ -791,7 +791,7 @@ function Sizzle( selector, context, results, seed ) {
 						if ( ( elem = context.getElementById( m ) ) ) {
 
 							// Support: IE, Opera, Webkit
-							// TODO: identify versions
+							//  identify versions
 							// getElementById can match elements by name instead of ID
 							if ( elem.id === m ) {
 								results.push( elem );
@@ -805,7 +805,7 @@ function Sizzle( selector, context, results, seed ) {
 					} else {
 
 						// Support: IE, Opera, Webkit
-						// TODO: identify versions
+						//  identify versions
 						// getElementById can match elements by name instead of ID
 						if ( newContext && ( elem = newContext.getElementById( m ) ) &&
 							contains( context, elem ) &&
@@ -1310,7 +1310,7 @@ setDocument = Sizzle.setDocument = function( node ) {
 	rbuggyMatches = [];
 
 	// qSa(:focus) reports false when true (Chrome 21)
-	// We allow this because of a bug in IE8/9 that throws an error
+	// We allow this because of a bu g in IE8/9 that throws an error
 	// whenever `document.activeElement` is accessed on an iframe
 	// So, we allow :focus to pass through QSA all the time to avoid the IE error
 	// See https://bugs.jquery.com/ticket/13378
@@ -4370,7 +4370,7 @@ Data.prototype = {
 			// Support: Chrome <=35 - 45
 			// Webkit & Blink performance suffers when deleting properties
 			// from DOM nodes, so set to undefined instead
-			// https://bugs.chromium.org/p/chromium/issues/detail?id=378607 (bug restricted)
+			// https://bugs.chromium.org/p/chromium/issues/detail?id=378607 (bug  restricted)
 			if ( owner.nodeType ) {
 				owner[ this.expando ] = undefined;
 			} else {
