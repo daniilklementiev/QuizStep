@@ -1,0 +1,79 @@
+@{
+    ViewData["Title"] = "Authorization";
+}
+
+<div class="wrapper">
+    <div class="logo">
+        <img src="https://avatars.githubusercontent.com/u/70135739?s=280&v=4" alt="">
+    </div>
+    <div class="text-center mt-4 name">
+        ITStep Quiz
+    </div>
+    <form class="p-3 mt-3">
+        <div class="form-field d-flex align-items-center">
+            <span class="far fa-user"></span>
+            <input type="text" name="userName" id="user-login" placeholder="Username">
+        </div>
+        <div class="form-field d-flex align-items-center">
+            <span class="fas fa-key"></span>
+            <input type="password" name="password" id="user-password" placeholder="Password">
+        </div>
+        <button class="btn mt-3" type="submit" id="login-button">Авторизуватися</button>
+    </form>
+    <div class="text-center fs-6">
+        <a href="#">Забули пароль?</a> чи <a asp-controller="Account" asp-action="Registration" style="font-weight: 300">Зареєструватися</a>
+    </div>
+</div>
+
+<div class="modal fade" id="authRejectedModal" tabindex="-1" aria-labelledby="authRejectedLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="authRejectedLabel">Authentication Rejected</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Invalid login or password</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded",() => {
+        const loginButton = document.getElementById("login-button");
+        if (!loginButton) throw "login-button not found" ;
+        loginButton.addEventListener("click", loginButtonClick);
+  });
+
+  function loginButtonClick() {
+         const userLoginInput = document.getElementById("user-login");
+         if (!userLoginInput) throw "user-login input not found";
+         const login = userLoginInput.value;
+         
+         const userPasswordInput = document.getElementById("user-password");
+         if (!userPasswordInput) throw "user-password input not found";
+         const password = userPasswordInput.value;
+         
+         window.fetch("/Account/AuthUser", {
+             method: "POST",
+             headers: {
+                 "Content-Type": "application/x-www-form-urlencoded"
+             },
+             body: `user-login=${login}&user-password=${password}`
+         })
+         .then(r => r.text())
+         .then(t => {
+             if(t === "OK") {
+                window.location.href = "/Home/QuestionsList";
+             }
+             else {
+                 const modal = new bootstrap.Modal(document.getElementById('authRejectedModal'));
+                 modal.show(modal);
+             }
+         });
+  }
+</script>

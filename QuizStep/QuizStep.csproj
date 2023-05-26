@@ -19,4 +19,8 @@
       <Compile Remove="Views\Home\Registration.cs" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="wwwroot\avatars\" />
+    </ItemGroup>
+
 </Project>

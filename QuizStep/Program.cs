@@ -2,13 +2,19 @@ using Microsoft.EntityFrameworkCore;
 using MySqlConnector;
 using QuizStep.Data;
 using QuizStep.Middleware;
+using QuizStep.Services.Hash;
+using QuizStep.Services.Kdf;
 using QuizStep.Services.Quiz;
+using QuizStep.Services.RandomService;
 using QuizStep.Services.Validation;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSingleton<IValidationService, ValidationService>();
 builder.Services.AddSingleton<IQuizService, QuizService>();
+builder.Services.AddSingleton<IRandomService, RandomService>();
+builder.Services.AddSingleton<IHashService, HashService>();
+builder.Services.AddSingleton<IKdfService, KdfService>();
 
 String? connectionString = builder.Configuration.GetConnectionString("Default");
 MySqlConnection connection = new MySqlConnection(connectionString);
@@ -50,8 +56,19 @@ app.UseAuthorization();
 app.UseSession();
 app.UseMiddleware<SessionAuthMiddleware>();
 
+// app.UseEndpoints(endpoints =>
+// {
+//     endpoints.MapControllerRoute(
+//         name: "default",
+//         pattern: "{controller=Home}/{action=Index}/{id?}");
+//     endpoints.MapControllerRoute(
+//         name: "account",
+//         pattern: "account/auth",
+//         defaults: new { controller = "Account", action = "Auth" });
+// });
+
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Account}/{action=Auth}/{id?}");
 
 app.Run();
