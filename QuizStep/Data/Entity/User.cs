@@ -10,6 +10,10 @@ public class User
     public String    PasswordHash { get; set; } = null!;
     public String    PasswordSalt { get; set; } = null!;
     public String?   Avatar       { get; set; } = null!;
+    public String Role { get; set; } = "Student";
     public DateTime  RegisterDt   { get; set; }
     public DateTime? LastEnterDt  { get; set; }
+
+
+    public ICollection<Test>? Tests { get; set; } = null!;
 }

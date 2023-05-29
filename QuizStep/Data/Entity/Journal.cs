@@ -1,8 +1,8 @@
 namespace QuizStep.Data.Entity;
 
-public class Question
+public class Journal
 {
     public Guid Id { get; set; }
-    public string Text { get; set; } = null!;
+    public Guid UserId { get; set; }
     public Guid TestId { get; set; }
 }

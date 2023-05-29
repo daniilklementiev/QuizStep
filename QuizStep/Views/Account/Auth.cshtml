@@ -1,5 +1,8 @@
+@using QuizStep.Models.UserModels
+
 @{
     ViewData["Title"] = "Authorization";
+    //var validationResults = TempData["validationModel"] as UserValidationModel;
 }
 
 <div class="wrapper">
@@ -9,15 +12,21 @@
     <div class="text-center mt-4 name">
         ITStep Quiz
     </div>
-    <form class="p-3 mt-3">
+    <form class="p-3 mt-3" method="post" asp-action="AuthUser" asp-controller="Account"> 
         <div class="form-field d-flex align-items-center">
             <span class="far fa-user"></span>
-            <input type="text" name="userName" id="user-login" placeholder="Username">
+            <input type="text" name="user-login" id="user-login" placeholder="Username">
         </div>
         <div class="form-field d-flex align-items-center">
             <span class="fas fa-key"></span>
-            <input type="password" name="password" id="user-password" placeholder="Password">
+            <input type="password" name="user-password" id="user-password" placeholder="Password">
         </div>
+        @if (ViewData["results"] is not null)
+        {
+            <div class="text-danger">
+                @ViewData["results"]
+            </div>
+        }
         <button class="btn mt-3" type="submit" id="login-button">Авторизуватися</button>
     </form>
     <div class="text-center fs-6">
@@ -44,36 +53,35 @@
 
 <script>
   document.addEventListener("DOMContentLoaded",() => {
-        const loginButton = document.getElementById("login-button");
-        if (!loginButton) throw "login-button not found" ;
-        loginButton.addEventListener("click", loginButtonClick);
-  });
-
-  function loginButtonClick() {
-         const userLoginInput = document.getElementById("user-login");
-         if (!userLoginInput) throw "user-login input not found";
-         const login = userLoginInput.value;
-         
-         const userPasswordInput = document.getElementById("user-password");
-         if (!userPasswordInput) throw "user-password input not found";
-         const password = userPasswordInput.value;
-         
-         window.fetch("/Account/AuthUser", {
-             method: "POST",
-             headers: {
-                 "Content-Type": "application/x-www-form-urlencoded"
-             },
-             body: `user-login=${login}&user-password=${password}`
-         })
-         .then(r => r.text())
-         .then(t => {
-             if(t === "OK") {
-                window.location.href = "/Home/QuestionsList";
-             }
-             else {
-                 const modal = new bootstrap.Modal(document.getElementById('authRejectedModal'));
-                 modal.show(modal);
-             }
-         });
-  }
+              const loginButton = document.getElementById("login-button");
+              if (!loginButton) throw "login-button not found" ;
+              loginButton.addEventListener("click", loginButtonClick);
+          });
+          function loginButtonClick() {
+              const userLoginInput = document.getElementById("user-login");
+              if (!userLoginInput) throw "user-login input not found";
+              const login = userLoginInput.value;
+  
+              const userPasswordInput = document.getElementById("user-password");
+              if (!userPasswordInput) throw "user-password input not found";
+              const password = userPasswordInput.value;
+              //
+              // window.fetch("/Account/AuthUser", {
+              //     method: "POST",
+              //     headers: {
+              //         "Content-Type": "application/x-www-form-urlencoded"
+              //     },
+              //     body: `user-login=${login}&user-password=${password}`
+              // })
+              // .then(r => r.text())
+              // .then(t => {
+              //     if(t === "OK") {
+              //       window.location.href = "/Home/Main";
+              //     }
+              //     else {
+              //         const modal = new bootstrap.Modal(document.getElementById('authRejectedModal'));
+              //         modal.show(modal);
+              //     }
+              // });
+        }
 </script>

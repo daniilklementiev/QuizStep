@@ -36,6 +36,7 @@ public class AccountController : Controller
 
     public IActionResult Auth()
     {
+        ViewData["results"] = TempData["results"];
         return View();
     }
 
@@ -84,12 +85,12 @@ public class AccountController : Controller
             validationResults.LoginMessage = "Login is required";
             isModelValid = false;
         }
-        if (!_validationService.Validate(userRegistrationModel.Login, ValidationTerms.Login))
+        else if (!_validationService.Validate(userRegistrationModel.Login, ValidationTerms.Login))
         {
             validationResults.LoginMessage = "Login doesn't match the pattern";
             isModelValid = false;
         }
-        if (_dataContext.Users.Any(u => u.Login.ToLower() == userRegistrationModel.Login))
+        else if (_dataContext.Users.Any(u => u.Login.ToLower() == userRegistrationModel.Login))
         {
             validationResults.LoginMessage = $"Login '{userRegistrationModel.Login}' is already taken";
             isModelValid = false;
@@ -207,36 +208,42 @@ public class AccountController : Controller
         }
     }
     
+    
     [HttpPost]
-    public String AuthUser()
+    public RedirectToActionResult AuthUser()
     {
         StringValues loginValues = Request.Form["user-login"];
-        if(loginValues.Count == 0)
+        if (loginValues.Count == 0)
         {
-            return "No login";
+            // no login
+            TempData["results"] = "No login";
+            return RedirectToAction("Auth", "Account");
         }
+
         String login = loginValues[0] ?? "";
 
         StringValues passwordValues = Request.Form["user-password"];
         if (passwordValues.Count == 0)
         {
-            return "No password";
+            // no password
+            TempData["results"] = "No password";
+            return RedirectToAction("Auth", "Account");
         }
+
         String password = passwordValues[0] ?? "";
 
-        User? user = _dataContext.Users.Where(u => u.Login == login).FirstOrDefault();
-        if (user is not null)   
-        { 
-            if(user.PasswordHash == _kdfService.GetDerivedKey(password, user.PasswordSalt))
+        User? user = _dataContext.Users.FirstOrDefault(u => u.Login == login);
+        if (user is not null)
+        {
+            if (user.PasswordHash == _kdfService.GetDerivedKey(password, user.PasswordSalt))
             {
                 HttpContext.Session.SetString("authUserId", user.Id.ToString());
-                user.LastEnterDt = DateTime.Now;
-                _dataContext.SaveChanges();
-                return $"OK";
+                return RedirectToAction("Main", "Home");
             }
         }
-
-        return $"Автентифікацію віхилено";
+        // no user
+        TempData["results"] = "Wrong login or password";
+        return RedirectToAction("Auth", "Account");
     }
     
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
