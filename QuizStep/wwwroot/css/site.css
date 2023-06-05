@@ -122,7 +122,7 @@ body {
   }
 }
 
-
+{}
 /* Test styles */
 .pagination .page-item .page-link:hover {
   background-color: #eee;
@@ -196,16 +196,10 @@ div.dataTables_wrapper div.dataTables_paginate ul.pagination {
   min-height: 60px;
   float: right;
 }
-
 .navbar {
   padding: .3rem 0.3rem !important;
 }
-
-
-
-
 /*radio button css*/
-
 @keyframes check {0% {height: 0;width: 0;}
   25% {height: 0;width: 10px;}
   50% {height: 20px;width: 10px;}
@@ -341,6 +335,132 @@ div.dataTables_wrapper div.dataTables_paginate ul.pagination {
 }
 li.paginate_button.page-item {
   z-index: 0;
+}
+
+/*profile styles*/
+
+.black a {
+  color: #000;
+}
+
+.post-content ul {
+  color: #474b5f;
+}
+
+.white a {
+  color: #fff;
+}
+/*------------------------------------
+	Member area
+------------------------------------*/
+.sidebar-item.active, .sidebar-item:hover {
+  background-color: #fff;
+  border: 1px solid #e6e7e9;
+  border-right: 0;
+  margin-right: -1px;
+}
+
+.sidebar-menu {
+  border-bottom: 1px solid #e6e7e9;
+  border-top: 1px solid #e6e7e9;
+  border-right: 1px solid #e6e7e9;
+  padding-bottom: 1rem;
+  padding-top: 1rem;
+  background-color: #f4f4f4;
+}
+
+.sidebar-item {
+  position: relative;
+  display: block;
+  padding: 0.75rem 1.25rem;
+  margin-bottom: 0.5rem;
+  border: 1px solid transparent;
+}
+
+.sidebar-item.active:hover {
+  background-color: #fff;
+}
+
+.card .icon-big {
+  font-size: 3rem;
+}
+
+.card .icon-big .notif {
+  position: absolute;
+  min-width: 25px;
+  border-radius: 5rem;
+  font-size: 1rem;
+  background: #dc3545;
+  color: #fff;
+}
+
+.card .numbers {
+  text-align: right;
+}
+
+.card .numbers p {
+  font-size: 1rem;
+  margin: 0;
+}
+
+.card .footer {
+  padding: 0;
+  line-height: 30px;
+}
+
+.side-notif {
+  padding-left: 7px;
+  padding-right: 7px;
+  font-size: 0.8rem;
+  border-radius: 5rem;
+  background-color: #dc3545;
+  color: #fff;
+}
+
+.statistics li {
+  padding: 0.25rem 0;
+}
+
+.member-item:hover .card {
+  background-color: #f4f4f4;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: #f4f4f4;
+}
+
+@media (max-width: 767.98px) {
+  .sidebar-item.active, .sidebar-item:hover {
+    border-right: 1px solid #e6e7e9;
+    margin-left: 0.25rem;
+    margin-right: 0.25rem;
+  }
+}
+
+.card-background {
+  /*background: url("") no-repeat;*/
+  -moz-background-size: 100%; /* Firefox 3.6+ */
+  -webkit-background-size: 100%; /* Safari 3.1+ и Chrome 4.0+ */
+  -o-background-size: 100%; /* Opera 9.6+ */
+  background-size: 100%; /* Современные браузеры */
+}
+
+/*Students profile table*/
+.custab{
+  border: 1px solid #ccc;
+  padding: 5px;
+  margin: 5% 0;
+  box-shadow: 3px 3px 2px #ccc;
+  transition: 0.5s;
+}
+.custab:hover{
+  box-shadow: 3px 3px 0px transparent;
+  transition: 0.5s;
+}
+
+.btn-add:hover {
+  background-color: #25D731;
+  color: #fff;
 }
 
 			 

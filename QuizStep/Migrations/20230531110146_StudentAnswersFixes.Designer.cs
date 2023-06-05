@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using QuizStep.Data;
 
@@ -10,34 +11,16 @@ using QuizStep.Data;
 namespace QuizStep.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230531110146_StudentAnswersFixes")]
+    partial class StudentAnswersFixes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "8.0.0-preview.3.23174.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
-
-            modelBuilder.Entity("QuizStep.Data.Entity.AssignedTest", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
-
-                    b.Property<Guid>("MentorId")
-                        .HasColumnType("char(36)");
-
-                    b.Property<Guid>("StudentId")
-                        .HasColumnType("char(36)");
-
-                    b.Property<Guid>("TestId")
-                        .HasColumnType("char(36)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("AssignedTests");
-                });
 
             modelBuilder.Entity("QuizStep.Data.Entity.Journal", b =>
                 {
@@ -48,9 +31,6 @@ namespace QuizStep.Migrations
                     b.Property<bool>("IsPassed")
                         .HasColumnType("tinyint(1)");
 
-                    b.Property<string>("Result")
-                        .HasColumnType("longtext");
-
                     b.Property<Guid>("TestId")
                         .HasColumnType("char(36)");
 
@@ -58,8 +38,6 @@ namespace QuizStep.Migrations
                         .HasColumnType("char(36)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("TestId");
 
                     b.ToTable("Journals");
                 });
@@ -200,17 +178,6 @@ namespace QuizStep.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("QuizStep.Data.Entity.Journal", b =>
-                {
-                    b.HasOne("QuizStep.Data.Entity.Test", "Test")
-                        .WithMany("Journals")
-                        .HasForeignKey("TestId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Test");
-                });
-
             modelBuilder.Entity("QuizStep.Data.Entity.Test", b =>
                 {
                     b.HasOne("QuizStep.Data.Entity.User", "Mentor")
@@ -220,11 +187,6 @@ namespace QuizStep.Migrations
                         .IsRequired();
 
                     b.Navigation("Mentor");
-                });
-
-            modelBuilder.Entity("QuizStep.Data.Entity.Test", b =>
-                {
-                    b.Navigation("Journals");
                 });
 
             modelBuilder.Entity("QuizStep.Data.Entity.User", b =>

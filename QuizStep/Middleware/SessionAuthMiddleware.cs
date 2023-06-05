@@ -33,7 +33,8 @@ public class SessionAuthMiddleware
                         new Claim(ClaimTypes.Sid, userId),
                         new Claim(ClaimTypes.Name, user.RealName),
                         new Claim(ClaimTypes.NameIdentifier, user.Login),
-                        new Claim(ClaimTypes.UserData, user.Avatar ?? string.Empty)
+                        new Claim(ClaimTypes.UserData, user.Avatar ?? string.Empty),
+                        new Claim(ClaimTypes.Role, user.Role)
                     };
                         
                     var principal = new ClaimsPrincipal(

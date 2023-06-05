@@ -21,7 +21,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="wwwroot\avatars\" />
+      <_ContentIncludedByDefault Remove="Views\Quiz\DisplayTemplates\QuestionTemplate.cshtml" />
+      <_ContentIncludedByDefault Remove="wwwroot\img\itstepback.jpeg" />
+      <_ContentIncludedByDefault Remove="wwwroot\img\standart_test_image.png" />
     </ItemGroup>
 
 </Project>

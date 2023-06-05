@@ -1,0 +1,34 @@
+@model QuizStep.Models.QuizModels.TestResultModel
+
+@{
+    ViewData["Title"] = "TestResult";
+}
+
+<div class="container d-flex justify-content-center align-items-center center-block">
+	<div class="row text-center">
+        <div class="text-center">
+            @if (@Model.IsPassed)
+            {
+                <br><br>
+                <h2 class="text-success">Ви успішно сдали тест!</h2>
+                <p style="font-size:20px;color:#5C5C5C;">
+                    Ваш результат: @Model.Result.<br/>
+                    Щоб повернутися до головної сторінки натисніть кнопку нижче. 
+                </p>
+                <a  class="btn btn-success" asp-action="Main" asp-controller="Home">Повернутися</a>
+                <br><br>
+            }
+            else if(!@Model.IsPassed)
+            {
+                <br><br>
+                <h2 class="text-danger">Ви не сдали тест!</h2>
+                <p style="font-size:20px;color:#5C5C5C;">
+                    Ваш результат: @Model.Result.<br/>
+                    Щоб повернутися до головної сторінки натисніть кнопку нижче. 
+                </p>
+                <a class="btn btn-danger" asp-action="Main" asp-controller="Home">Повернутися</a>
+                <br><br>
+            }
+        </div>
+    </div>
+</div>

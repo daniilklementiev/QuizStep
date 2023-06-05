@@ -4,7 +4,7 @@
 @{
     ViewData["Title"] = "Test";
 }
-
+<input type="hidden" asp-for="TestId" value="@Model.TestId"/>
 <div class="album py-2 bg-light">
     <div class="container">
         <div class="row">
@@ -17,7 +17,7 @@
         <div class="row">
             <div class="col-md-12 col-sm-12  col-xs-12">
                 <div class="shadow pt-2 mb-2 bg-white rounded" style="border-left: 5px solid #2196F3">
-                    <form method="post">
+                    <form method="post" asp-controller="Quiz" asp-action="UnifiedPagination">
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="card" style="margin:10px 0">
@@ -26,7 +26,7 @@
                                         {
                                             <li class="list-group-item">
                                                 <label class="checkboxRadio">
-                                                    <input name="g" type="radio"/>
+                                                    <input  type="radio" asp-for="@Model.CheckedAnswer" value="@answer.Id"/>
                                                     <span class="primary"></span>
                                                 </label>
                                                 @answer.Text
@@ -44,28 +44,31 @@
                                                 @if (ViewBag.QuestionIndex > 0)
                                                 {
                                                     <li class="paginate_button page-item">
-                                                        <a class="page-link"
-                                                           href="@Url.Action("PreviousQuestion", new { questionIndex = ViewBag.QuestionIndex - 1 })">
-                                                            Previous
-                                                        </a>
+                                                        <button class="page-link" name="button" value="previous" onclick="changeQuestionIndex(-1)">
+                                                            Попереднє
+                                                            <input id="questionIndex" name="questionIndex" type="hidden" value="@ViewBag.QuestionIndex"/>
+                                                        </button>
                                                     </li>
                                                 }
                                                 else
                                                 {
                                                     <li class="paginate_button page-item disabled">
-                                                        <a class="page-link"
-                                                           href="@Url.Action("PreviousQuestion", new { questionIndex = ViewBag.QuestionIndex - 1 })">
-                                                            Previous
+                                                        <a class="page-link" >
+                                                            @* href="@Url.Action("PreviousQuestion", new { questionIndex = ViewBag.QuestionIndex - 1 })"> *@
+                                                            Попереднє
                                                         </a>
                                                     </li>
                                                 }
                                                 @if (ViewBag.QuestionIndex < ViewBag.TotalQuestions - 1)
                                                 {
                                                     <li class="paginate_button page-item">
-                                                        <a class="page-link"
-                                                           href="@Url.Action("NextQuestion", new { questionIndex = ViewBag.QuestionIndex + 1 })">
-                                                            Next
-                                                        </a>
+                                                        <button class="page-link" name="button" value="next" onclick="changeQuestionIndex(1)">
+                                                            Наступне
+                                                            <input id="questionIndex" name="questionIndex" type="hidden" value="@ViewBag.QuestionIndex"/>
+                                                            @* <a class="page-link" href="@Url.Action("NextQuestion", new { questionIndex = ViewBag.QuestionIndex + 1 })"> *@
+                                                            @*      Next *@
+                                                            @*  </a> *@
+                                                        </button>
                                                     </li>
                                                 }
                                                 else
@@ -73,10 +76,15 @@
                                                     <li class="paginate_button page-item disabled">
                                                         <a class="page-link"
                                                            href="@Url.Action("NextQuestion", new { questionIndex = ViewBag.QuestionIndex + 1 })">
-                                                            Next
+                                                            Наступне
                                                         </a>
                                                     </li>
                                                 }
+                                                <li class="paginate_button page-item">
+                                                    <button class="page-link" name="button" value="finish">
+                                                        Завершити тест
+                                                    </button>
+                                                </li>
                                             </ul>
                                         </div>
                                     </div>
@@ -93,3 +101,21 @@
 <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+
+<script>
+    function changeQuestionIndex(offset) {
+            var questionIndexInput = document.getElementById('questionIndex');
+            if (questionIndexInput) {
+                var currentValue = parseInt(questionIndexInput.value) || 0; // Значение по умолчанию, если questionIndex не содержит числовое значение
+                questionIndexInput.value = currentValue + offset;
+                @ViewBag.QuestionIndex = questionIndexInput.value; 
+            }
+        // var questionIndexInput = document.getElementById('questionIndex');
+        // if (questionIndexInput) {
+        //     questionIndexInput.value = parseInt(questionIndexInput.value) - offset;
+        //    
+        //     console.log(questionIndexInput.value);
+        // }
+    }
+</script>

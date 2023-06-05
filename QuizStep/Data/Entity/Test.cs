@@ -9,4 +9,5 @@ public class Test
     
     // навигационное свойство
     public User? Mentor { get; set; }
+    public ICollection<Journal> Journals { get; set; }
 }

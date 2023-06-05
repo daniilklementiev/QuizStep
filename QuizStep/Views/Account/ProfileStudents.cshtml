@@ -1,0 +1,138 @@
+@model QuizStep.Models.UserModels.ProfileStudentsModel
+@{
+    ViewData["Title"] = "Profile";
+}
+
+<section id="about-us" class="py-5">
+    <div class="container">
+        <div class="row">
+            <!--left sidebar-->
+            <div class="col-md-3 pr-md-4">
+                <div class="sidebar-left">
+                    <!--sidebar menu-->
+                    <ul class="list-unstyled sidebar-menu pl-md-2 pr-md-0">
+                        <li>
+                            <a class="sidebar-item d-flex justify-content-between align-items-center" asp-action="Profile" asp-controller="Account" asp-route-id="@Model.Login">
+                                Профіль
+                                <span class="fas fa-user"></span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="sidebar-item d-flex justify-content-between align-items-center" asp-action="ProfileTestsEdit" asp-controller="Account" asp-route-id="@Model.Login">
+                                Тести
+                                <span class="fas fa-copy"></span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="sidebar-item active d-flex justify-content-between align-items-center">
+                                Студенти
+                                <span class="fas fa-user"></span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="sidebar-item d-flex justify-content-between align-items-center">
+                                Налаштування
+                                <span class="fas fa-cog"></span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="sidebar-item d-flex justify-content-between align-items-center" asp-action="Logout" asp-controller="Account">
+                                Вихід
+                                <span class="fas fa-sign-out-alt"></span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!--Content-->
+            <div class="col-md-9">
+                <div class="dashboard-area">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="mb-3 bg-dark">
+                                <div class="card-background row">
+                                    <div class="col-12">
+                                        <div class="row">
+                                            <div class=" col-md-6 ml-auto mr-auto">
+                                                <div class="profiles p-3 my-4 rounded text-center shadow-sm">
+                                                    <div class="avatars">
+                                                        <a href="#">
+                                                            <img src="~/avatars/@Model.Avatar" alt="@Model.Login avatar" class="avatar-lg img-fluid" data-toggle="tooltip" data-placement="bottom" title="">
+                                                        </a>
+                                                    </div>
+                                                    <div class="names">
+                                                        <h3 class="title text-light">@Model.RealName</h3>
+                                                        <h4 class="title text-light">Role: @Model.Role</h4>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row col-12">
+                            <table class="table table-striped ml-3 custab">
+                                <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Login</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                </tr>
+                                </thead>
+                                @foreach (var student in @Model.Students)
+                                {
+                                    <tr>
+                                        <td>@student.Id</td>
+                                        <td>@student.Login</td>
+                                        <td>@student.Realname</td>
+                                        <td>@student.Email</td>
+                                        @if (@Model.Role == "Admin")
+                                        {
+                                            <td>
+                                                <form id="myForm" asp-action="" method="post">
+                                                    <select id="mySelect" class="form-select" aria-label="Default select example"> 
+                                                        <option value="1" selected>@student.Role</option> 
+                                                        <option value="2"> 
+                                                            @if (@student.Role == "Student") 
+                                                            { 
+                                                            <span>Mentor</span> 
+                                                            } 
+                                                            else 
+                                                            { 
+                                                            <span>Student</span> 
+                                                            } 
+                                                        </option> 
+                                                    </select> 
+                                                </form>
+                                            </td>
+                                            
+                                        }
+                                        else
+                                        {
+                                            <td>@student.Role</td>
+                                        }
+
+                                    </tr>
+                                }
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+<script>
+document.getElementById("mySelect").addEventListener("change", function () {
+        document.getElementById("myForm").submit();
+    });
+</script>

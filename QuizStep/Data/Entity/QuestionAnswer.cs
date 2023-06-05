@@ -6,4 +6,6 @@ public class QuestionAnswer
     public Guid QuestionId { get; set; }
     public String Text { get; set; } = null!;
     public Boolean IsRight { get; set; }
+    
+    public Question Question { get; set; }
 }

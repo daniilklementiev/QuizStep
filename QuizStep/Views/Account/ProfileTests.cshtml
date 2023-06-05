@@ -1,0 +1,139 @@
+@model QuizStep.Models.UserModels.ProfileTestsModel
+@{
+    ViewData["Title"] = "Profile";
+}
+
+<section id="about-us" class="py-5">
+    <div class="container">
+        <div class="row">
+            <!--left sidebar-->
+            <div class="col-md-3 pr-md-4">
+                <div class="sidebar-left">
+                    <!--sidebar menu-->
+                    <ul class="list-unstyled sidebar-menu pl-md-2 pr-md-0">
+                        <li>
+                            <a class="sidebar-item d-flex justify-content-between align-items-center" asp-action="Profile" asp-controller="Account" asp-route-id="@Model.Login">
+                                Профіль
+                                <span class="fas fa-user"></span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="sidebar-item active d-flex justify-content-between align-items-center">
+                                Тести
+                                <span class="fas fa-copy"></span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="sidebar-item d-flex justify-content-between align-items-center" asp-action="ProfileStudents" asp-controller="Account" asp-route-id="@Model.Login">
+                                Студенти
+                                <span class="fas fa-user"></span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="sidebar-item d-flex justify-content-between align-items-center">
+                                Налаштування
+                                <span class="fas fa-cog"></span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="sidebar-item d-flex justify-content-between align-items-center" asp-action="Logout" asp-controller="Account">
+                                Вихід
+                                <span class="fas fa-sign-out-alt"></span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!--Content-->
+            <div class="col-md-9">
+                <div class="dashboard-area">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="mb-3 bg-dark">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="row card-background">
+                                            <div class=" col-md-6 ml-auto mr-auto">
+                                                <div class="profiles p-3 my-4 rounded text-center shadow-sm">
+                                                    <div class="avatars">
+                                                        <a href="#">
+                                                            <img src="~/avatars/@Model.Avatar" alt="@Model.Login avatar" class="avatar-lg img-fluid" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Edit avatar images">
+                                                        </a>
+                                                    </div>
+                                                    <div class="names">
+                                                        <h3 class="title text-light">@Model.RealName</h3>
+                                                        <h4 class="title text-light">Role: @Model.Role</h4>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 d-flex flex-wrap">
+            @if (@Model.Role == "Mentor")
+            {
+                foreach (var test in Model.Tests)
+                {
+                    @Html.DisplayFor(t => test, "TestMentorTemplate");
+                }
+                <div class="col-sm-6 col-md-4 col-lg-3 mt-4 d-flex">
+                    <div class="btn-add card card-inverse card-info justify-content-center align-items-center" style="width:20rem">
+                        <button class="btn" data-bs-toggle="modal" data-bs-target="#addModal">
+                            <i class="fa fa-plus" style="font-size: 10rem"></i>
+                        </button>
+                    </div>
+                </div>
+            }
+            @if(@Model.Role == "Student")
+            {
+                foreach (var test in Model.Tests)
+                {
+                    @Html.DisplayFor(t=>test, "TestStudentTemplate");
+                }
+            }
+        </div>
+    </div>
+</section>
+
+<div class="modal" id="addModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Створення нового тесту</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form method="post" asp-action="CreateTest">
+                <input type="hidden" id="login" name="Login" value="@Model.Login"/>
+                <div class="modal-body">
+                    <!-- Поле ввода названия теста -->
+                    <div class="form-group">
+                        <label for="testTitle">Назва тесту</label>
+                        <input type="text" class="form-control" id="testTitle" name="TestTitle" placeholder="Введіть назву теста">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрити</button>
+                    <button type="submit" class="btn btn-primary">Зберегти</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>

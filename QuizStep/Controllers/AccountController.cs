@@ -1,10 +1,14 @@
 using System.Diagnostics;
+using System.Security.Claims;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Primitives;
 using QuizStep.Data;
 using QuizStep.Data.Entity;
 using QuizStep.Models;
+using QuizStep.Models.QuizModels;
 using QuizStep.Models.UserModels;
 using QuizStep.Services.Hash;
 using QuizStep.Services.Kdf;
@@ -21,7 +25,8 @@ public class AccountController : Controller
     private readonly IRandomService _randomService;
     private readonly IKdfService _kdfService;
 
-    public AccountController(IValidationService validationService, DataContext dataContext, IHashService hashService, IKdfService kdfService, IRandomService randomService)
+    public AccountController(IValidationService validationService, DataContext dataContext, IHashService hashService,
+        IKdfService kdfService, IRandomService randomService)
     {
         _validationService = validationService;
         _dataContext = dataContext;
@@ -29,6 +34,7 @@ public class AccountController : Controller
         _kdfService = kdfService;
         _randomService = randomService;
     }
+
     public IActionResult Registration()
     {
         return View();
@@ -58,7 +64,8 @@ public class AccountController : Controller
                 validationResults.AvatarMessage = "Too small file. File must be larger than 1Kb";
                 isModelValid = false;
             }
-            else {
+            else
+            {
                 String ext = Path.GetExtension(userRegistrationModel.Avatar.FileName);
                 String hash = (_hashService.Hash(
                     userRegistrationModel.Avatar.FileName + Guid.NewGuid()))[..16];
@@ -72,6 +79,7 @@ public class AccountController : Controller
                         userRegistrationModel.Avatar.CopyTo(fileStream);
                     }
                 }
+
                 ViewData["avatarFilename"] = avatarFilename;
             }
         }
@@ -95,8 +103,11 @@ public class AccountController : Controller
             validationResults.LoginMessage = $"Login '{userRegistrationModel.Login}' is already taken";
             isModelValid = false;
         }
+
         #endregion
+
         #region password valid
+
         if (!_validationService.Validate(userRegistrationModel.Password, ValidationTerms.NotEmpty))
         {
             validationResults.PasswordMessage = "Password is required";
@@ -184,6 +195,7 @@ public class AccountController : Controller
                 Login = userRegistrationModel.Login,
                 PasswordHash = _kdfService.GetDerivedKey(userRegistrationModel.Password, salt),
                 PasswordSalt = salt,
+                Role = "Student",
                 Email = userRegistrationModel.Email,
                 EmailCode = _randomService.ConfirmCode(6),
                 RealName = userRegistrationModel.RealName,
@@ -196,10 +208,10 @@ public class AccountController : Controller
             // генеруємо токен підтвердження пошти
             // var emailConfirmToken = _GenerateEmailToken(user);
             _dataContext.SaveChanges();
- 
+
             // // надсилаємо код підтвердження пошти
             // _SendConfirmEmail(user, emailConfirmToken);
-            return View("Profile", userRegistrationModel);
+            return RedirectToAction("Main", "Home");
         }
         else
         {
@@ -207,8 +219,292 @@ public class AccountController : Controller
             return View("Registration");
         }
     }
-    
-    
+
+    public RedirectToActionResult Logout()
+    {
+        HttpContext.Session.Remove("authUserId");
+        return RedirectToAction("Auth", "Account");
+    }
+
+    public IActionResult Profile([FromRoute] String id)
+    {
+        var user = _dataContext.Users.FirstOrDefault(u => u.Login == id);
+        // получаем общее количество пользователей в базе данных
+        if (user is not null)
+        {
+            ProfileModel model = new()
+            {
+                Id = user.Id,
+                Login = user.Login,
+                RealName = user.RealName,
+                Avatar = user.Avatar,
+                Email = user.Email,
+                Role = user.Role,
+                Students = _dataContext.Users.Count(u => u.Role == "Student")
+            };
+            if (String.IsNullOrEmpty(model.Avatar))
+            {
+                model.Avatar = "no_avatar.png";
+            }
+
+            if (HttpContext.User.Identity is not null && HttpContext.User.Identity.IsAuthenticated)
+            {
+                String userLogin = HttpContext.User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
+                if (model.Login == userLogin)
+                {
+                    model.IsPersonal = true;
+                }
+            }
+
+            return View(model);
+        }
+        else
+        {
+            return NotFound();
+        }
+    }
+
+    public IActionResult ProfileStudents([FromRoute] String id)
+    {
+        var user = _dataContext.Users.FirstOrDefault(u => u.Login == id);
+        // получаем общее количество пользователей в базе данных
+        if (user is not null)
+        {
+            ProfileStudentsModel model = new()
+            {
+                Id = user.Id,
+                Login = user.Login,
+                RealName = user.RealName,
+                Avatar = user.Avatar,
+                Email = user.Email,
+                Role = user.Role,
+                Students = _dataContext.Users.Select(s => new StudentModel()
+                {
+                    Id = s.Id,
+                    Login = s.Login,
+                    Realname = s.RealName,
+                    Email = s.Email,
+                    Role = s.Role,
+                    Tests = null!
+                }).ToList()
+            };
+
+            if (HttpContext.User.Identity is not null && HttpContext.User.Identity.IsAuthenticated)
+            {
+                String userLogin = HttpContext.User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
+                if (model.Login == userLogin)
+                {
+                    model.IsPersonal = true;
+                }
+            }
+
+            return View(model);
+        }
+        else
+        {
+            return NotFound();
+        }
+    }
+
+
+    public IActionResult ProfileTests([FromRoute] String id)
+    {
+        var user = _dataContext.Users.FirstOrDefault(u => u.Login == id);
+        if (user is not null)
+        {
+            var quizzes = _dataContext.Tests.ToList();
+            var journals = _dataContext.Journals.Where(j => j.UserId == user.Id).ToList();
+            var assignedTests = _dataContext.AssignedTests.Where(at => at.StudentId == user.Id).ToList();
+            StudentTestModel model = new()
+            {
+                Id = user.Id,
+                Login = user.Login,
+                RealName = user.RealName,
+                Avatar = user.Avatar,
+                Role = user.Role,
+                Quizzes = quizzes
+                    .Where(t => journals.Any(j => j.TestId == t.Id) || assignedTests.Any(at => at.TestId == t.Id))
+                    .Select(t => new AllTestsModel()
+                    {
+                        Icon = t.Icon,
+                        Id = t.Id,
+                        MentorId = t.MentorId,
+                        Name = t.Name,
+                        IsPassed = journals.Any(j => j.IsPassed && j.TestId == t.Id),
+                        MentorName = t.Mentor?.RealName ?? String.Empty,
+                        QuestionsCount = _dataContext.Questions.Count(q => q.TestId == t.Id),
+                        Result = journals.FirstOrDefault(j => j.TestId == t.Id)?.Result,
+                    }).ToList()
+            };
+
+            return View("ProfileStudentTests", model);
+        }
+        else
+        {
+            return NotFound();
+        }
+    }
+
+    public IActionResult ProfileTestsEdit([FromRoute] String id)
+    {
+        var user = _dataContext.Users.FirstOrDefault(u => u.Login == id);
+        if (user is not null)
+        {
+            ProfileTestsModel model = new()
+            {
+                Id = user.Id,
+                Login = user.Login,
+                RealName = user.RealName,
+                Avatar = user.Avatar,
+                Email = user.Email,
+                Role = user.Role,
+                Tests = _dataContext.Tests.AsEnumerable().Select(t => new MentorTestModel()
+                {
+                    Icon = t.Icon,
+                    Id = t.Id,
+                    MentorId = t.MentorId,
+                    TestTitle = t.Name,
+                    Questions = null!
+                }).ToList()
+            };
+
+
+            if (HttpContext.User.Identity is not null && HttpContext.User.Identity.IsAuthenticated)
+            {
+                String userLogin = HttpContext.User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
+                if (model.Login == userLogin)
+                {
+                    model.IsPersonal = true;
+                }
+            }
+
+            return View("ProfileTests", model);
+        }
+        else
+        {
+            return NotFound();
+        }
+    }
+
+    [HttpPost]
+    public IActionResult CreateTest(MentorTestModel model)
+    {
+        var user = _dataContext.Users.FirstOrDefault(u => u.Login == model.Login);
+        if (user is not null)
+        {
+            if (!_dataContext.Tests.Any(t => t.Name == model.TestTitle))
+            {
+                _dataContext.Tests.Add(new Test()
+                {
+                    Id = Guid.NewGuid(),
+                    Name = model.TestTitle,
+                    MentorId = user.Id,
+                    Icon =
+                        "https://img.freepik.com/premium-vector/clipboard-with-checklist-flat-style_183665-74.jpg?w=1060", // стандартное изображение для теста
+                    Journals = null!,
+                    Mentor = user
+                });
+                _dataContext.SaveChanges();
+            }
+
+            ProfileTestsModel newModel = new()
+            {
+                Id = user.Id,
+                Login = user.Login,
+                RealName = user.RealName,
+                Avatar = user.Avatar,
+                Email = user.Email,
+                Role = user.Role,
+                Tests = _dataContext.Tests.AsEnumerable().Select(t => new MentorTestModel()
+                {
+                    Icon = t.Icon,
+                    Id = t.Id,
+                    MentorId = t.MentorId,
+                    TestTitle = t.Name,
+                    Questions = null!
+                }).ToList()
+            };
+
+            return View("ProfileTests", newModel);
+        }
+
+        return NotFound();
+    }
+
+    public IActionResult EditMentorTest([FromRoute] string id)
+    {
+        var test = _dataContext.Tests.FirstOrDefault(t => t.Id == Guid.Parse(id));
+        if (test is not null)
+        {
+            var user = _dataContext.Users.FirstOrDefault(u => u.Id == test.MentorId);
+            if (user is not null)
+            {
+                MentorTestModel newModel = new()
+                {
+                    Id = user.Id,
+                    Login = user.Login,
+                    RealName = user.RealName,
+                    Avatar = user.Avatar,
+                    Role = user.Role,
+                    TestTitle = test.Name,
+                    Icon = test.Icon,
+                    TestId = test.Id,
+                    Questions = new List<QuestionModel>
+                    {
+                        new QuestionModel
+                        {
+                            Id = Guid.NewGuid(),
+                            TestId = test.Id.ToString(),
+                            Answers = new List<AnswerModel>
+                            {
+                                new AnswerModel { Id = Guid.NewGuid(), QuestionId = Guid.NewGuid() },
+                                new AnswerModel { Id = Guid.NewGuid(), QuestionId = Guid.NewGuid() }
+                            }
+                        }
+                    }
+                };
+
+                return View(newModel);
+            }
+        }
+
+
+        return NotFound();
+    }
+
+    [HttpPost]
+    public IActionResult AddQuestions(MentorTestModel model)
+    {
+        // Сохранение вопросов и ответов в базу данных
+        foreach (var question in model.Questions)
+        {
+            // Сохранение вопроса
+            _dataContext.Questions.Add(new ()
+            {
+                Id = Guid.NewGuid(),
+                Text = question.Text,
+                TestId = model.TestId
+            });
+
+            foreach (var answer in question.Answers)
+            {
+                // Сохранение ответа
+                _dataContext.Answers.Add(new()
+                {
+                    Id = Guid.NewGuid(),
+                    IsRight = answer.IsRight,
+                    QuestionId = question.Id,
+                    Text = answer.Text
+                });
+            }
+        }
+
+        _dataContext.SaveChanges();
+
+        return RedirectToAction("ProfileTests", "Account");
+    }
+
+
     [HttpPost]
     public RedirectToActionResult AuthUser()
     {
@@ -241,11 +537,12 @@ public class AccountController : Controller
                 return RedirectToAction("Main", "Home");
             }
         }
+
         // no user
         TempData["results"] = "Wrong login or password";
         return RedirectToAction("Auth", "Account");
     }
-    
+
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {

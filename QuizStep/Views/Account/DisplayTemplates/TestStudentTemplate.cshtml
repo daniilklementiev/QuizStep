@@ -1,0 +1,71 @@
+@model QuizStep.Models.UserModels.AllTestsModel
+
+<div class="col-sm-6 col-md-4 col-lg-3 mt-4">
+    @if (@Model.IsPassed)
+    {
+        <div class="card card-inverse card-info card-success">
+            <input type="hidden" value="@Model.Id" name="id"/>
+            <div class="card-img-container">
+                <img class="card-img" src="@Model.Icon" alt="@Model.Name тест зображення">
+            </div>
+            <div class="card-block">
+                <h4 class="ml-2 card-title">@Model.Name</h4>
+                <div class="ml-2 mb-2 card-text">
+                    <p>Кількість питань: @Model.QuestionsCount</p>
+                    <p>Результат: <span>@(String.IsNullOrEmpty(Model.Result) ? "відсутній" : Model.Result)</span></p>
+                    <p>Викладач: <span>@(String.IsNullOrEmpty(Model.MentorName) ? "відсутній" : @Model.MentorName)</span></p>
+                    <p class="text-success">Пройдено</p>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="card card-inverse card-info card-not-success">
+            <input type="hidden" value="@Model.Id" name="id"/>
+            <div class="card-img-container">
+                <img class="card-img" src="@Model.Icon" alt="@Model.Name тест зображення">
+            </div>
+            <div class="card-block">
+                <h4 class="ml-2 card-title">@Model.Name</h4>
+                <div class="ml-2 mb-2 card-text">
+                    <p>Кількість питань: @Model.QuestionsCount</p>
+                    <p>Результат: <span>@(String.IsNullOrEmpty(Model.Result) ? "відсутній" : Model.Result)</span></p>
+                    <p>Викладач: <span>@(String.IsNullOrEmpty(Model.MentorName) ? "відсутній" : @Model.MentorName)</span></p>
+                    <p class="text-danger">Не пройдено</p>
+                </div>
+            </div>
+        </div>
+    }
+    
+</div>
+
+<style>
+    .card-success{
+        max-width: 250px;
+        padding: 1rem;
+        position: relative;
+        background: linear-gradient(to bottom, green, yellow);
+        padding: 3px;
+    }
+    .card-not-success {
+        color: white;
+        max-width: 250px;
+        padding: 1rem;
+        position: relative;
+        background: linear-gradient(to bottom, red, purple);
+        padding: 3px;
+    }
+    .card-img-container {
+        width: 100%; 
+        height: 15rem;
+        overflow: hidden; 
+    }
+    
+    .card-img {
+        width: 100%; 
+        height: auto; 
+    }
+
+
+</style>

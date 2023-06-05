@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@using System.Security.Claims
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8"/>
@@ -18,6 +20,22 @@
                  <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Main">
                      <img src="https://poprofessii.in.ua/Multimedia/ProductImages/2020/3/20/113031_%D0%A8%D0%B0%D0%B3_%D0%9B%D0%AC%D0%B2%D0%BE%D0%B2.png" width="80rem" alt="ItStepUniversity logo"/>
                  </a>
+                 String userLogin = Context.User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
+                 String userAvatar = Context.User.Claims.First(c => c.Type == ClaimTypes.UserData).Value;
+                 if(String.IsNullOrEmpty(userAvatar)) userAvatar = "no_avatar.png";
+                 <a asp-controller="Account" asp-action="Profile" asp-route-id="@userLogin">
+                     <img src="~/avatars/@(userAvatar)"
+                          alt="@userLogin avatar"
+                          width="80rem"
+                          title="@userLogin" />
+                 </a>
+                 @* <a asp-controller="User" asp-action="Logout"  *@
+                 @*    title="Вихід" class="mx-3"> *@
+                 @*     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-right" viewBox="0 0 16 16"> *@
+                 @*         <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z" /> *@
+                 @*         <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z" /> *@
+                 @*     </svg> *@
+                 @* </a> *@
              }
              else
              {
@@ -49,11 +67,11 @@
     </main>
 </div>
 
-<footer class="border-top footer text-muted">
-    <div class="container">
-        &copy; 2023 - QuizStep - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-    </div>
-</footer>
+@* <footer class="border-top footer text-muted"> *@
+@*     <div class="container"> *@
+@*         &copy; 2023 - QuizStep - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a> *@
+@*     </div> *@
+@* </footer> *@
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 <script src="~/js/site.js" asp-append-version="true"></script>
