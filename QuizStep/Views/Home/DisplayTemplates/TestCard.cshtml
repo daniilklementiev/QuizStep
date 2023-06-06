@@ -4,9 +4,10 @@
     <div class="card card-inverse card-info">
         <img class="card-img-top" src="@Model.Icon" alt="@Model.Name тест зображення">
         <div class="card-block">
-            <h4 class="card-title">@Model.Name</h4>
-            <div class="card-text">
-                Створено: @Model.MentorName
+            <h4 class="card-title mx-2 mt-1">@Model.Name</h4>
+            <div class="card-text mx-2">
+                <p>@(Model.MentorName == String.Empty ? "Загальнодоступний тест" : $"Створено: {Model.MentorName}")</p>
+                <p>Кількість питань: @Model.QuestionsCount</p>
             </div>
         </div>
         <div class="card-footer">

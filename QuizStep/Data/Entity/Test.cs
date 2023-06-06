@@ -3,7 +3,7 @@ namespace QuizStep.Data.Entity;
 public class Test
 {
     public Guid Id { get; set; }
-    public Guid MentorId { get; set; }
+    public Guid? MentorId { get; set; } = Guid.Empty;
     public String Icon { get; set; } = null!;
     public String Name { get; set; } = null!;
     

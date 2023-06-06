@@ -29,20 +29,35 @@ public class HomeController : Controller
 
     public IActionResult Main()
     {
-        MainViewModel model = new()
-        {
-            Tests = _dataContext.Tests.
-                Select(x => new QuizTestModel
+        var userIdString = HttpContext.Session.GetString("authUserId");
+        try
+        { 
+            var userId = Guid.Parse(userIdString);
+            // var quizzes = _dataContext.Tests.ToList();
+            // var assignedTests = _dataContext.AssignedTests.Where(at => at.StudentId == userId).ToList();
+            // var filteredQuizzes = quizzes
+            //     .Where(t => journals.Any(j => j.TestId == t.Id) || assignedTests.Any(at => at.TestId == t.Id))
+            //     .AsEnumerable();
+            MainViewModel model = new()
             {
-                Id = x.Id,
-                MentorId = x.MentorId,
-                Icon = x.Icon,
-                Name = x.Name,
-                MentorName = x.Mentor!.RealName ?? "No mentor"
-            }).ToList()
-        };
-        return View(model);
+                Tests = _dataContext.Tests.Select(t => new QuizTestModel
+                    {
+                        Id = t.Id,
+                        MentorId = t.MentorId,
+                        Icon = t.Icon,
+                        Name = t.Name,
+                        MentorName = _dataContext.Users.FirstOrDefault(u=>u.Id == t.MentorId).RealName ?? String.Empty,
+                        QuestionsCount = _dataContext.Questions.Count(q => q.TestId == t.Id)
+                    }).ToList()
+            };
+            return View(model);
+        }
+        catch (Exception)
+        {
+            return RedirectToAction("Auth", "Account");
+        }
 
+        return NotFound();
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

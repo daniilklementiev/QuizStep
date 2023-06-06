@@ -387,6 +387,30 @@ public class AccountController : Controller
     }
 
     [HttpPost]
+    public String DeleteTest()
+    {
+        StringValues testIdValues = Request.Form["testId"];
+        if (testIdValues.Count == 0)
+        {
+            return "No testId";
+        }
+
+        String testId = testIdValues[0] ?? "";
+
+        Test? test = _dataContext.Tests.FirstOrDefault(t => t.Id.ToString() == testId);
+        // User? user = _dataContext.Users.Where(u => u.Login == login).FirstOrDefault();
+        if (test is not null) // знайдений користувач
+        {
+            _dataContext.Tests.Remove(test);
+            return $"OK";
+        }
+
+        return $"Тест не удалено";
+    }
+
+    
+
+    [HttpPost]
     public IActionResult CreateTest(MentorTestModel model)
     {
         var user = _dataContext.Users.FirstOrDefault(u => u.Login == model.Login);

@@ -21,8 +21,7 @@ MySqlConnection connection = new MySqlConnection(connectionString);
 builder.Services.AddDbContext<DataContext>
     (
         options => options.UseMySql(
-            connection, ServerVersion.AutoDetect(connection)),
-        ServiceLifetime.Transient
+            connection, ServerVersion.AutoDetect(connection))
     );
 
 

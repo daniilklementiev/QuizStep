@@ -5,7 +5,7 @@ namespace QuizStep.Models.UserModels;
 public class MentorTestModel
 {
     public Guid Id { get; set; }
-    public Guid MentorId { get; set; }
+    public Guid? MentorId { get; set; }
     public String? Icon { get; set; }
     public String TestTitle { get; set; } = null!;
     public String       Login              { get; set; } = null!;
