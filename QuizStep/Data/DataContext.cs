@@ -32,7 +32,11 @@ public class DataContext : DbContext
             .HasMany(q => q.Answers)
             .WithOne(a => a.Question)
             .HasForeignKey(a => a.QuestionId);
-
+        modelBuilder.Entity<Test>()
+            .HasMany(t => t.Questions)
+            .WithOne(q => q.Test)
+            .HasForeignKey(q=>q.TestId);
+        
         base.OnModelCreating(modelBuilder);
     }
 }

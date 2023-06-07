@@ -17,12 +17,24 @@
                                 <span class="fas fa-user"></span>
                             </a>
                         </li>
-                        <li>
-                            <a class="sidebar-item d-flex justify-content-between align-items-center" asp-action="ProfileTestsEdit" asp-controller="Account" asp-route-id="@Model.Login">
-                                Тести
-                                <span class="fas fa-copy"></span>
-                            </a>
-                        </li>
+                        @if (@Model.Role == "Mentor")
+                        {
+                            <li>
+                                <a class="sidebar-item d-flex justify-content-between align-items-center" asp-action="ProfileTestsEdit" asp-controller="Account" asp-route-id="@Model.Login">
+                                    Редагування тестів
+                                    <span class="fas fa-copy"></span>
+                                </a>
+                            </li>
+                        }
+                        @if (@Model.Role == "Student")
+                        {
+                            <li>
+                                <a class="sidebar-item d-flex justify-content-between align-items-center" asp-action="ProfileTests" asp-controller="Account" asp-route-id="@Model.Login">
+                                    Тести
+                                    <span class="fas fa-copy"></span>
+                                </a>
+                            </li>
+                        }
                         <li>
                             <a class="sidebar-item active d-flex justify-content-between align-items-center">
                                 Студенти

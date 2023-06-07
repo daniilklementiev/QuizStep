@@ -1,3 +1,5 @@
+using QuizStep.Data.Entity;
+
 namespace QuizStep.Models.UserModels;
 
 public class ProfileTestsModel
@@ -9,8 +11,12 @@ public class ProfileTestsModel
     public String       Email              { get; set; } = null!;
     public String?      Avatar             { get; set; } = null!;
     public bool IsPersonal { get; set; }
+    public Guid EditingTestId { get; set; }
+    public Question EditingQuestion { get; set; } = null!;
     public List<MentorTestModel> Tests { get; set; } = null!;
-    
+    public List<Question> Questions { get; set; } = null!;
+    public List<QuestionAnswer> Answers { get; set; } = null!;
+
 
     public ProfileTestsModel(Data.Entity.User user)
     {

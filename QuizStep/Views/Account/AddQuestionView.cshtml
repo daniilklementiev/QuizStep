@@ -1,4 +1,4 @@
-@model QuizStep.Models.UserModels.StudentTestModel
+@model QuizStep.Models.UserModels.ProfileTestsModel
 @{
     ViewData["Title"] = "Profile";
 }
@@ -20,7 +20,7 @@
                         @if (@Model.Role == "Mentor")
                         {
                             <li>
-                                <a class="sidebar-item d-flex justify-content-between align-items-center active" >
+                                <a class="sidebar-item d-flex justify-content-between align-items-center" asp-action="ProfileTestsEdit" asp-controller="Account" asp-route-id="@Model.Login">
                                     Редагування тестів
                                     <span class="fas fa-copy"></span>
                                 </a>
@@ -29,7 +29,7 @@
                         @if (@Model.Role == "Student")
                         {
                             <li>
-                                <a class="sidebar-item d-flex justify-content-between align-items-center active">
+                                <a class="sidebar-item d-flex justify-content-between align-items-center" asp-action="ProfileTests" asp-controller="Account" asp-route-id="@Model.Login">
                                     Тести
                                     <span class="fas fa-copy"></span>
                                 </a>
@@ -90,16 +90,57 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-12 d-flex flex-wrap">
-            @foreach (var test in Model.Quizzes)
+        <div class="col-12">
+            @if (@Model.Role == "Mentor")
             {
-                @Html.DisplayFor(t => test, "TestStudentTemplate");
+                <form asp-action="AddQuestion" method="post">
+                    <div class="form-group">
+                        <label asp-for="@Model.EditingQuestion.Text" class="control-label"></label>
+                        <input asp-for="@Model.EditingQuestion.Text" class="form-control" style="width:100%"/>
+                        <span asp-validation-for="@Model.EditingQuestion.Text" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label>Answers:</label>
+                        <div class="form-group">
+                            <label>Answer 1:</label>
+                            <div class="input-group">
+                                <input asp-for="@Model.EditingQuestion.Answers[0].Text" class="form-control"/>
+                                <div class="input-group-append">
+                                    <div class="">
+                                        <input asp-for="@Model.EditingQuestion.Answers[0].IsRight" type="checkbox"/>    
+                                    </div>
+                                </div>
+                            </div>
+                            <span asp-validation-for="@Model.EditingQuestion.Answers[0].Text" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label>Answer 2:</label>
+                            <input asp-for="@Model.EditingQuestion.Answers[1].Text" class="form-control"/>
+                            <input asp-for="@Model.EditingQuestion.Answers[1].IsRight" type="checkbox"/>
+                            <span asp-validation-for="@Model.Answers[1].Text" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label>Answer 3:</label>
+                            <input asp-for="@Model.EditingQuestion.Answers[2].Text" class="form-control"/>
+                            <input asp-for="@Model.EditingQuestion.Answers[2].IsRight" type="checkbox"/>
+                            <span asp-validation-for="@Model.EditingQuestion.Answers[2].Text" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label>Answer 4:</label>
+                            <input asp-for="@Model.EditingQuestion.Answers[3].Text" class="form-control"/>
+                            <input asp-for="@Model.EditingQuestion.Answers[3].IsRight" type="checkbox"/>
+                            <span asp-validation-for="@Model.EditingQuestion.Answers[3].Text" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <input type="hidden" asp-for="@Model.EditingQuestion.TestId" value="@Model.EditingTestId"/>
+                        <button type="submit" class="btn btn-primary">Додати це питання</button>
+                    </div>
+                </form>
             }
         </div>
     </div>
 </section>
-
-
 
 <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>

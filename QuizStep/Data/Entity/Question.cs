@@ -7,4 +7,5 @@ public class Question
     public Guid TestId { get; set; }
     
     public List<QuestionAnswer> Answers { get; set; }
+    public Test Test { get; set; } = null!;
 }

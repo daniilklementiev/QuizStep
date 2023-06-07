@@ -6,8 +6,10 @@ public class Test
     public Guid? MentorId { get; set; } = Guid.Empty;
     public String Icon { get; set; } = null!;
     public String Name { get; set; } = null!;
+    public String Description { get; set; } = null!;
     
     // навигационное свойство
     public User? Mentor { get; set; }
+    public List<Question> Questions { get; set; }
     public ICollection<Journal> Journals { get; set; }
 }

@@ -4,17 +4,19 @@ namespace QuizStep.Models.UserModels;
 
 public class MentorTestModel
 {
-    public Guid Id { get; set; }
-    public Guid? MentorId { get; set; }
-    public String? Icon { get; set; }
-    public String TestTitle { get; set; } = null!;
-    public String       Login              { get; set; } = null!;
-    public String       RealName           { get; set; } = null!;
-    public String Role { get; set; }
-    public String?      Avatar             { get; set; } = null!;
-    public Guid TestId { get; set; }
-    public List<QuestionModel> Questions { get; set; } = null!;
-    public List<AnswerModel> Answers { get; set; } = null!;
+    public Guid                Id                 { get; set; }
+    public Guid?               MentorId           { get; set; }
+    public Guid                TestId             { get; set; }
+    public String?             TestIcon           { get; set; }
+    public String              TestTitle          { get; set; } = null!;
+    public String              TestDescription    { get; set; } = null!;
+    public String              Login              { get; set; } = null!;
+    public String              RealName           { get; set; } = null!;
+    public String              Role               { get; set; }
+    public String?             Avatar             { get; set; }
+    
+    public List<QuestionModel> Questions          { get; set; } = null!;
+    public List<AnswerModel>  Answers             { get; set; } = null!;
 
 
     public MentorTestModel(Data.Entity.User user)

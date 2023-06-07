@@ -6,12 +6,21 @@
         <div class="card-block">
             <h4 class="card-title mx-2 mt-1">@Model.Name</h4>
             <div class="card-text mx-2">
+                <p>@(String.IsNullOrEmpty(Model.Description) ? "Опис відсутній" : Model.Description)</p>
                 <p>@(Model.MentorName == String.Empty ? "Загальнодоступний тест" : $"Створено: {Model.MentorName}")</p>
                 <p>Кількість питань: @Model.QuestionsCount</p>
             </div>
         </div>
         <div class="card-footer">
-            <a class="btn btn-info btn-sm" asp-action="DisplayTest" asp-controller="Quiz" asp-route-id="@Model.Id">Розпочати</a>
+            @if (Model.QuestionsCount > 0)
+            {
+                <a class="btn btn-info btn-sm" asp-action="DisplayTest" asp-controller="Quiz" asp-route-id="@Model.Id">Розпочати</a>
+            }
+            else
+            {
+                <a class="btn btn-info btn-sm disabled" asp-action="DisplayTest" asp-controller="Quiz" asp-route-id="@Model.Id">Розпочати</a>
+            }
+           
         </div>
     </div>
 </div>

@@ -46,6 +46,7 @@ public class HomeController : Controller
                         MentorId = t.MentorId,
                         Icon = t.Icon,
                         Name = t.Name,
+                        Description = t.Description,
                         MentorName = _dataContext.Users.FirstOrDefault(u=>u.Id == t.MentorId).RealName ?? String.Empty,
                         QuestionsCount = _dataContext.Questions.Count(q => q.TestId == t.Id)
                     }).ToList()

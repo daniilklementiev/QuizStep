@@ -358,9 +358,10 @@ public class AccountController : Controller
                 Avatar = user.Avatar,
                 Email = user.Email,
                 Role = user.Role,
-                Tests = _dataContext.Tests.AsEnumerable().Select(t => new MentorTestModel()
+                Tests = _dataContext.Tests.Where(t=>t.MentorId==user.Id).AsEnumerable().Select(t => new MentorTestModel()
                 {
-                    Icon = t.Icon,
+                    TestIcon = t.Icon,
+                    TestDescription = t.Description,
                     Id = t.Id,
                     MentorId = t.MentorId,
                     TestTitle = t.Name,
@@ -385,31 +386,303 @@ public class AccountController : Controller
             return NotFound();
         }
     }
-
-    [HttpPost]
-    public String DeleteTest()
+    
+    
+    /// <summary>
+    /// Test deleting from database 
+    /// </summary>
+    /// <param name="id">Test id</param>
+    /// <returns></returns>
+    public IActionResult DeleteTest(Guid id)
     {
-        StringValues testIdValues = Request.Form["testId"];
-        if (testIdValues.Count == 0)
+        var userIdString = HttpContext.Session.GetString("authUserId");
+        if (userIdString is null)
         {
-            return "No testId";
+            return RedirectToAction("Auth", "Account");
         }
 
-        String testId = testIdValues[0] ?? "";
-
-        Test? test = _dataContext.Tests.FirstOrDefault(t => t.Id.ToString() == testId);
-        // User? user = _dataContext.Users.Where(u => u.Login == login).FirstOrDefault();
-        if (test is not null) // знайдений користувач
+        try
         {
-            _dataContext.Tests.Remove(test);
-            return $"OK";
-        }
+            var user = _dataContext.Users.FirstOrDefault(u => u.Id == Guid.Parse(userIdString));
 
-        return $"Тест не удалено";
+            if (user is not null)
+            {
+                var test = _dataContext.Tests.Include(t => t.Questions).ThenInclude(q => q.Answers)
+                    .FirstOrDefault(t => t.Id == id);
+                if (test == null)
+                {
+                    return NotFound();
+                }
+
+                // Удаление всех ответов, связанных с вопросами теста
+                foreach (var question in test.Questions)
+                {
+                    _dataContext.Answers.RemoveRange(question.Answers);
+                }
+
+                // Удаление всех вопросов теста
+                _dataContext.Questions.RemoveRange(test.Questions);
+
+                // Удаление самого теста
+                _dataContext.Tests.Remove(test);
+
+                _dataContext.SaveChanges();
+
+                ProfileTestsModel model = new()
+                {
+                    Id = user.Id,
+                    Login = user.Login,
+                    RealName = user.RealName,
+                    Avatar = user.Avatar,
+                    Email = user.Email,
+                    Role = user.Role,
+                    Tests = _dataContext.Tests.Where(t=>t.MentorId==user.Id).AsEnumerable().Select(t => new MentorTestModel()
+                    {
+                        TestIcon = t.Icon,
+                        TestDescription = t.Description,
+                        Id = t.Id,
+                        MentorId = t.MentorId,
+                        TestTitle = t.Name,
+                        Questions = null!
+                    }).ToList()
+                };
+
+
+                if (HttpContext.User.Identity is not null && HttpContext.User.Identity.IsAuthenticated)
+                {
+                    String userLogin = HttpContext.User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
+                    if (model.Login == userLogin)
+                    {
+                        model.IsPersonal = true;
+                    }
+                }
+
+                return View("ProfileTests", model);
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+        catch
+        {
+            return NotFound();
+        }
+       
     }
 
-    
+    public IActionResult EditQuestions([FromRoute] String id)
+    {
+        
+        try
+        {
+            var user = _dataContext.Users.FirstOrDefault(u => u.Id == Guid.Parse(HttpContext.Session.GetString("authUserId")));
 
+            if (user is not null)
+            {
+                var test = _dataContext.Tests.Include(t => t.Questions).ThenInclude(q => q.Answers)
+                    .FirstOrDefault(t => t.Id == Guid.Parse(id));
+                if (test == null)
+                {
+                    return NotFound();
+                }
+
+                var questions = _dataContext.Questions
+                    .Include(q => q.Answers)
+                    .Where(q => q.TestId == Guid.Parse(id))
+                    .ToList();
+                ProfileTestsModel model = new()
+                {
+                    Id = user.Id,
+                    Login = user.Login,
+                    RealName = user.RealName,
+                    Avatar = user.Avatar,
+                    Email = user.Email,
+                    Role = user.Role,
+                    EditingTestId = test.Id,
+                    Questions = questions
+                };
+
+
+                if (HttpContext.User.Identity is not null && HttpContext.User.Identity.IsAuthenticated)
+                {
+                    String userLogin = HttpContext.User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
+                    if (model.Login == userLogin)
+                    {
+                        model.IsPersonal = true;
+                    }
+                }
+
+                return View(model);
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+        catch
+        {
+            return NotFound();
+        }
+    }
+
+    public IActionResult AddQuestionView([FromRoute] String id)
+    {
+        var user = _dataContext.Users.FirstOrDefault(u =>
+            u.Id == Guid.Parse(HttpContext.Session.GetString("authUserId")));
+        try
+        {
+            if (user is not null)
+            {
+                var test = _dataContext.Tests.Include(t => t.Questions).ThenInclude(q => q.Answers)
+                    .FirstOrDefault(t => t.Id == Guid.Parse(id));
+                if (test == null)
+                {
+                    return NotFound();
+                }
+
+                var testQuestions = _dataContext.Questions.Where(q=>q.TestId==test.Id).ToList();
+                ProfileTestsModel model = new()
+                {
+                    Id = user.Id,
+                    Login = user.Login,
+                    RealName = user.RealName,
+                    Avatar = user.Avatar,
+                    Email = user.Email,
+                    Role = user.Role,
+                    EditingTestId = test.Id,
+                    EditingQuestion = new Question()
+                    {
+                        Id = Guid.NewGuid(),
+                        Text = String.Empty,
+                        TestId = Guid.Parse(id),
+                        Answers = new List<QuestionAnswer>
+                        {
+                            new(),
+                            new(),
+                            new(),
+                            new()
+                        }
+                    },
+                };
+
+
+                if (HttpContext.User.Identity is not null && HttpContext.User.Identity.IsAuthenticated)
+                {
+                    String userLogin = HttpContext.User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
+                    if (model.Login == userLogin)
+                    {
+                        model.IsPersonal = true;
+                    }
+                }
+                return View(model);
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+        catch
+        {
+            return NotFound();
+        }
+    }
+
+    [HttpPost]
+    public IActionResult AddQuestion(ProfileTestsModel model)
+    {
+        var user = _dataContext.Users.FirstOrDefault(u =>
+            u.Id == Guid.Parse(HttpContext.Session.GetString("authUserId")));
+        try
+        {
+            if (user is not null)
+            {
+                var test = _dataContext.Tests.Include(t => t.Questions).ThenInclude(q => q.Answers)
+                    .FirstOrDefault(t => t.Id == model.EditingQuestion.TestId);
+                if (test == null)
+                {
+                    return NotFound();
+                }
+
+                var question = new Question()
+                {
+                    Id = Guid.NewGuid(),
+                    Test = test,
+                    Text = model.EditingQuestion.Text,
+                    TestId = test.Id,
+                    Answers = model.EditingQuestion.Answers,
+                };
+
+                _dataContext.Questions.Add(question);
+                List<QuestionAnswer> Answers = new();
+                foreach (var answer in model.EditingQuestion.Answers)
+                {
+                    if (answer.Text != null && answer.Text != String.Empty)
+                    {
+                        var newAnswer = new QuestionAnswer()
+                        {
+                            Id = Guid.NewGuid(),
+                            IsRight = answer.IsRight,
+                            Question = question,
+                            QuestionId = question.Id,
+                            Text = answer.Text
+                        };
+                        Answers.Add(newAnswer);
+                    }
+                }
+
+                foreach (var answer in Answers)
+                {
+                    _dataContext.Answers.Add(answer);
+                }
+                
+                _dataContext.SaveChanges();
+
+                var questions = _dataContext.Questions
+                    .Include(q => q.Answers)
+                    .Where(q => q.TestId == test.Id)
+                    .ToList();
+                ProfileTestsModel newModel = new()
+                {
+                    Id = user.Id,
+                    Login = user.Login,
+                    RealName = user.RealName,
+                    Avatar = user.Avatar,
+                    Email = user.Email,
+                    Role = user.Role,
+                    EditingTestId = test.Id,
+                    Questions = questions
+                };
+
+
+                if (HttpContext.User.Identity is not null && HttpContext.User.Identity.IsAuthenticated)
+                {
+                    String userLogin = HttpContext.User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
+                    if (newModel.Login == userLogin)
+                    {
+                        newModel.IsPersonal = true;
+                    }
+                }
+                return View("EditQuestions", newModel);
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+        catch
+        {
+            return NotFound();
+        }
+    }
+
+
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="model"></param>
+    /// <returns></returns>
     [HttpPost]
     public IActionResult CreateTest(MentorTestModel model)
     {
@@ -422,9 +695,9 @@ public class AccountController : Controller
                 {
                     Id = Guid.NewGuid(),
                     Name = model.TestTitle,
+                    Description = model.TestDescription,
                     MentorId = user.Id,
-                    Icon =
-                        "https://img.freepik.com/premium-vector/clipboard-with-checklist-flat-style_183665-74.jpg?w=1060", // стандартное изображение для теста
+                    Icon = model.TestIcon ?? "https://img.freepik.com/premium-vector/clipboard-with-checklist-flat-style_183665-74.jpg?w=1060",
                     Journals = null!,
                     Mentor = user
                 });
@@ -439,9 +712,10 @@ public class AccountController : Controller
                 Avatar = user.Avatar,
                 Email = user.Email,
                 Role = user.Role,
-                Tests = _dataContext.Tests.AsEnumerable().Select(t => new MentorTestModel()
+                Tests = _dataContext.Tests.Where(t=>t.MentorId==user.Id).AsEnumerable().Select(t => new MentorTestModel()
                 {
-                    Icon = t.Icon,
+                    TestIcon = t.Icon,
+                    TestDescription = t.Description,
                     Id = t.Id,
                     MentorId = t.MentorId,
                     TestTitle = t.Name,
@@ -454,81 +728,7 @@ public class AccountController : Controller
 
         return NotFound();
     }
-
-    public IActionResult EditMentorTest([FromRoute] string id)
-    {
-        var test = _dataContext.Tests.FirstOrDefault(t => t.Id == Guid.Parse(id));
-        if (test is not null)
-        {
-            var user = _dataContext.Users.FirstOrDefault(u => u.Id == test.MentorId);
-            if (user is not null)
-            {
-                MentorTestModel newModel = new()
-                {
-                    Id = user.Id,
-                    Login = user.Login,
-                    RealName = user.RealName,
-                    Avatar = user.Avatar,
-                    Role = user.Role,
-                    TestTitle = test.Name,
-                    Icon = test.Icon,
-                    TestId = test.Id,
-                    Questions = new List<QuestionModel>
-                    {
-                        new QuestionModel
-                        {
-                            Id = Guid.NewGuid(),
-                            TestId = test.Id.ToString(),
-                            Answers = new List<AnswerModel>
-                            {
-                                new AnswerModel { Id = Guid.NewGuid(), QuestionId = Guid.NewGuid() },
-                                new AnswerModel { Id = Guid.NewGuid(), QuestionId = Guid.NewGuid() }
-                            }
-                        }
-                    }
-                };
-
-                return View(newModel);
-            }
-        }
-
-
-        return NotFound();
-    }
-
-    [HttpPost]
-    public IActionResult AddQuestions(MentorTestModel model)
-    {
-        // Сохранение вопросов и ответов в базу данных
-        foreach (var question in model.Questions)
-        {
-            // Сохранение вопроса
-            _dataContext.Questions.Add(new ()
-            {
-                Id = Guid.NewGuid(),
-                Text = question.Text,
-                TestId = model.TestId
-            });
-
-            foreach (var answer in question.Answers)
-            {
-                // Сохранение ответа
-                _dataContext.Answers.Add(new()
-                {
-                    Id = Guid.NewGuid(),
-                    IsRight = answer.IsRight,
-                    QuestionId = question.Id,
-                    Text = answer.Text
-                });
-            }
-        }
-
-        _dataContext.SaveChanges();
-
-        return RedirectToAction("ProfileTests", "Account");
-    }
-
-
+    
     [HttpPost]
     public RedirectToActionResult AuthUser()
     {

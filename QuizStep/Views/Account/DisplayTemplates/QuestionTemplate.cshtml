@@ -1,0 +1,14 @@
+@model QuizStep.Data.Entity.Question
+
+<div class="question">
+    <h3>@Model.Text</h3>
+    <ul>
+        @foreach (var answer in Model.Answers)
+        {
+            <li>
+                <input type="checkbox" name="answer" value="@answer.Id" @(answer.IsRight ? "checked" : "")>
+                @answer.Text
+            </li>
+        }
+    </ul>
+</div>
