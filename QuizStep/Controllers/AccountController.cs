@@ -604,16 +604,8 @@ public class AccountController : Controller
                     return NotFound();
                 }
 
-                var question = new Question()
-                {
-                    Id = Guid.NewGuid(),
-                    Test = test,
-                    Text = model.EditingQuestion.Text,
-                    TestId = test.Id,
-                    Answers = model.EditingQuestion.Answers,
-                };
-
-                _dataContext.Questions.Add(question);
+                var questionId = Guid.NewGuid();
+                
                 List<QuestionAnswer> Answers = new();
                 foreach (var answer in model.EditingQuestion.Answers)
                 {
@@ -623,14 +615,25 @@ public class AccountController : Controller
                         {
                             Id = Guid.NewGuid(),
                             IsRight = answer.IsRight,
-                            Question = question,
-                            QuestionId = question.Id,
+                            Question = model.EditingQuestion,
+                            QuestionId = questionId,
                             Text = answer.Text
                         };
                         Answers.Add(newAnswer);
                     }
                 }
 
+                var question = new Question()
+                {
+                    Id = questionId,
+                    Test = test,
+                    Text = model.EditingQuestion.Text,
+                    TestId = test.Id,
+                    Answers = Answers,
+                };
+
+                _dataContext.Questions.Add(question);
+                
                 foreach (var answer in Answers)
                 {
                     _dataContext.Answers.Add(answer);

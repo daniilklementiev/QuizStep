@@ -34,7 +34,7 @@
                                     <span class="fas fa-copy"></span>
                                 </a>
                             </li>
-                                                }
+                        }
                         <li>
                             <a class="sidebar-item d-flex justify-content-between align-items-center" asp-action="ProfileStudents" asp-controller="Account" asp-route-id="@Model.Login">
                                 Студенти
@@ -89,6 +89,9 @@
             </div>
         </div>
     </div>
+    <div>
+         <a class="btn btn-success" asp-action="AddQuestionView" asp-controller="Account" asp-route-id="@Model.EditingTestId">Додати нове питання</a> @* add new question*@
+    </div>
     <div class="row">
         <div class="col-12 d-flex flex-wrap">
             @if (@Model.Role == "Mentor")
@@ -97,7 +100,6 @@
                 {
                     @Html.DisplayFor(q => question, "QuestionTemplate")
                 }
-                <a class="btn btn-success" asp-action="AddQuestionView" asp-controller="Account" asp-route-id="@Model.EditingTestId">Додати нове питання</a> @* add new question*@
             }
         </div>
     </div>

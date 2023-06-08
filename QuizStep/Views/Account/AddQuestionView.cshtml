@@ -95,41 +95,50 @@
             {
                 <form asp-action="AddQuestion" method="post">
                     <div class="form-group">
-                        <label asp-for="@Model.EditingQuestion.Text" class="control-label"></label>
-                        <input asp-for="@Model.EditingQuestion.Text" class="form-control" style="width:100%"/>
-                        <span asp-validation-for="@Model.EditingQuestion.Text" class="text-danger"></span>
+                        <label asp-for="@Model.EditingQuestion.Text" class="control-label" style="font-weight: bolder">Текст питання:</label>
+                        <input asp-for="@Model.EditingQuestion.Text" class="form-control" placeholder="Введіть текст питання"/>
                     </div>
-                    <div class="form-group">
-                        <label>Answers:</label>
+                    <label style="font-weight: bolder">Відповіді:</label>
+                    <div class="form-group" style="margin-left: 0.7rem">
                         <div class="form-group">
-                            <label>Answer 1:</label>
+                            <label>Перша відповідь:</label>
                             <div class="input-group">
-                                <input asp-for="@Model.EditingQuestion.Answers[0].Text" class="form-control"/>
-                                <div class="input-group-append">
-                                    <div class="">
-                                        <input asp-for="@Model.EditingQuestion.Answers[0].IsRight" type="checkbox"/>    
-                                    </div>
-                                </div>
+                                <input asp-for="@Model.EditingQuestion.Answers[0].Text" class="form-control" placeholder="Введіть текст відповіді"/>
                             </div>
-                            <span asp-validation-for="@Model.EditingQuestion.Answers[0].Text" class="text-danger"></span>
+                            <div class="input-group mt-2">
+                                <input asp-for="@Model.EditingQuestion.Answers[0].IsRight" type="checkbox" style="scale:1.5; margin-left: 0.5rem" class="mr-2"/>
+                                <label class="form-check-label" for="@Model.EditingQuestion.Answers[0].IsRight">Правильна відповідь</label>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label>Answer 2:</label>
-                            <input asp-for="@Model.EditingQuestion.Answers[1].Text" class="form-control"/>
-                            <input asp-for="@Model.EditingQuestion.Answers[1].IsRight" type="checkbox"/>
-                            <span asp-validation-for="@Model.Answers[1].Text" class="text-danger"></span>
+                    </div>
+                    <div class="form-group" style="margin-left: 0.7rem">
+                        <label>Друга відповідь:</label>
+                        <div class="input-group">
+                            <input asp-for="@Model.EditingQuestion.Answers[1].Text" class="form-control" placeholder="Введіть текст відповіді"/>
                         </div>
-                        <div class="form-group">
-                            <label>Answer 3:</label>
-                            <input asp-for="@Model.EditingQuestion.Answers[2].Text" class="form-control"/>
-                            <input asp-for="@Model.EditingQuestion.Answers[2].IsRight" type="checkbox"/>
-                            <span asp-validation-for="@Model.EditingQuestion.Answers[2].Text" class="text-danger"></span>
+                        <div class="input-group mt-2">
+                            <input asp-for="@Model.EditingQuestion.Answers[1].IsRight" type="checkbox" style="scale:1.5; margin-left: 0.5rem" class="mr-2"/>
+                            <label class="form-check-label" for="@Model.EditingQuestion.Answers[1].IsRight">Правильна відповідь</label>
                         </div>
-                        <div class="form-group">
-                            <label>Answer 4:</label>
-                            <input asp-for="@Model.EditingQuestion.Answers[3].Text" class="form-control"/>
-                            <input asp-for="@Model.EditingQuestion.Answers[3].IsRight" type="checkbox"/>
-                            <span asp-validation-for="@Model.EditingQuestion.Answers[3].Text" class="text-danger"></span>
+                    </div>
+                    <div class="form-group" style="margin-left: 0.7rem">
+                        <label>Третя відповідь:</label>
+                        <div class="input-group">
+                            <input asp-for="@Model.EditingQuestion.Answers[2].Text" class="form-control" placeholder="Введіть текст відповіді"/>
+                        </div>
+                        <div class="input-group mt-2">
+                            <input asp-for="@Model.EditingQuestion.Answers[2].IsRight" type="checkbox" style="scale:1.5; margin-left: 0.5rem" class="mr-2"/>
+                            <label class="form-check-label" for="@Model.EditingQuestion.Answers[2].IsRight">Правильна відповідь</label>
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-left: 0.7rem">
+                        <label>Четверта відповідь:</label>
+                        <div class="input-group">
+                            <input asp-for="@Model.EditingQuestion.Answers[3].Text" class="form-control" placeholder="Введіть текст відповіді"/>
+                        </div>
+                        <div class="input-group mt-2">
+                            <input asp-for="@Model.EditingQuestion.Answers[3].IsRight" type="checkbox" style="scale:1.5; margin-left: 0.5rem" class="mr-2"/>
+                            <label class="form-check-label" for="@Model.EditingQuestion.Answers[3].IsRight">Правильна відповідь</label>
                         </div>
                     </div>
                     <div class="form-group">

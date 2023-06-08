@@ -1,14 +1,20 @@
 @model QuizStep.Data.Entity.Question
 
-<div class="question">
-    <h3>@Model.Text</h3>
-    <ul>
-        @foreach (var answer in Model.Answers)
-        {
-            <li>
-                <input type="checkbox" name="answer" value="@answer.Id" @(answer.IsRight ? "checked" : "")>
-                @answer.Text
-            </li>
-        }
-    </ul>
+<div class="card card-block" style="margin:1rem;">
+    <div class="card-block" style="padding:0.5rem;">
+        <h4 class="card-title">@Model.Text</h4>
+        <ul class="list-group list-group-flush" style="list-style-type: none;padding-left: 0;">
+            @foreach (var answer in Model.Answers)
+            {
+                <li>
+                    <input type="checkbox" name="answer" value="@answer.Id" @(answer.IsRight ? "checked" : "") disabled>
+                    @answer.Text
+                </li>
+            }
+        </ul>
+        <div class="flex-column" style="margin-top:1rem;">
+            <a class="btn btn-primary text-white"><i class="fa fa-cog"></i></a> @* edit *@
+            <a class="btn btn-danger text-white"><i class="fa fa-minus-circle"></i></a> @* delete *@
+        </div>
+    </div>
 </div>
