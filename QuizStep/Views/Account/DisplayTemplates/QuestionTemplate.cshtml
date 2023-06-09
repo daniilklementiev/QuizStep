@@ -12,9 +12,8 @@
                 </li>
             }
         </ul>
-        <div class="flex-column" style="margin-top:1rem;">
-            <a class="btn btn-primary text-white"><i class="fa fa-cog"></i></a> @* edit *@
-            <a class="btn btn-danger text-white"><i class="fa fa-minus-circle"></i></a> @* delete *@
+        <div class="card-footer d-flex justify-content-center" style="margin-top:1rem;">
+            <a class="btn btn-danger text-white" asp-action="DeleteQuestion" asp-route-id="@Model.Id"><i class="fa fa-minus-circle"></i></a> @* delete *@
         </div>
     </div>
 </div>

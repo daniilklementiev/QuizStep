@@ -12,6 +12,9 @@ public class ProfileTestsModel
     public String?      Avatar             { get; set; } = null!;
     public bool IsPersonal { get; set; }
     public Guid EditingTestId { get; set; }
+    public String EditingTestName { get; set; }
+    public String? EditingTestDescription { get; set; }
+    public String EditingTestIcon { get; set; }
     public Question EditingQuestion { get; set; } = null!;
     public List<MentorTestModel> Tests { get; set; } = null!;
     public List<Question> Questions { get; set; } = null!;

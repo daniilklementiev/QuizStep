@@ -1,9 +1,11 @@
 using System.Diagnostics;
+using System.Net;
 using System.Security.Claims;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Primitives;
 using QuizStep.Data;
 using QuizStep.Data.Entity;
@@ -500,6 +502,9 @@ public class AccountController : Controller
                     Email = user.Email,
                     Role = user.Role,
                     EditingTestId = test.Id,
+                    EditingTestName = test.Name,
+                    EditingTestDescription = test.Description,
+                    EditingTestIcon = test.Icon,
                     Questions = questions
                 };
 
@@ -514,6 +519,66 @@ public class AccountController : Controller
                 }
 
                 return View(model);
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+        catch
+        {
+            return NotFound();
+        }
+    }
+    
+    public IActionResult EditTestProps(ProfileTestsModel model)
+    {
+        var test = _dataContext.Tests.FirstOrDefault(t => t.Id == model.EditingTestId);
+        var userId = HttpContext.Session.GetString("authUserId");
+        try
+        {
+            var user = _dataContext.Users.FirstOrDefault(u => u.Id == Guid.Parse(userId));
+            if (test is not null)
+            {
+                if(!String.IsNullOrEmpty(model.EditingTestDescription)){}
+                    test.Description = model.EditingTestDescription;
+                if (!String.IsNullOrEmpty(model.EditingTestName))
+                    test.Name = model.EditingTestName;
+                if (String.IsNullOrEmpty(model.EditingTestIcon))
+                    test.Icon =
+                        "https://img.freepik.com/premium-vector/clipboard-with-checklist-flat-style_183665-74.jpg?w=1060";
+                if (!String.IsNullOrEmpty(model.EditingTestIcon))
+                    test.Icon = model.EditingTestIcon;
+                _dataContext.Tests.Update(test);
+                _dataContext.SaveChanges();
+            
+            
+                var questions = _dataContext.Questions
+                    .Include(q => q.Answers)
+                    .Where(q => q.TestId == test.Id)
+                    .ToList();
+                ProfileTestsModel newModel = new()
+                {
+                    Id = user.Id,
+                    Login = user.Login,
+                    RealName = user.RealName,
+                    Avatar = user.Avatar,
+                    Email = user.Email,
+                    Role = user.Role,
+                    EditingTestId = test.Id,
+                    Questions = questions
+                };
+
+
+                if (HttpContext.User.Identity is not null && HttpContext.User.Identity.IsAuthenticated)
+                {
+                    String userLogin = HttpContext.User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
+                    if (newModel.Login == userLogin)
+                    {
+                        newModel.IsPersonal = true;
+                    }
+                }
+                return View("EditQuestions", newModel);
             }
             else
             {
@@ -622,7 +687,7 @@ public class AccountController : Controller
                         Answers.Add(newAnswer);
                     }
                 }
-
+                
                 var question = new Question()
                 {
                     Id = questionId,
@@ -678,8 +743,65 @@ public class AccountController : Controller
             return NotFound();
         }
     }
+    
+    public IActionResult DeleteQuestion([FromRoute] String id)
+    {
+        var userId = HttpContext.Session.GetString("authUserId");
+        try
+        {
+            var user = _dataContext.Users.FirstOrDefault(u => u.Id == Guid.Parse(userId));
+            var questionId = Guid.Parse(id);
+            var question = _dataContext.Questions.FirstOrDefault(q => q.Id == questionId);
+            var answers = _dataContext.Answers.Where(a => a.QuestionId == questionId).ToList();
+            if (question is not null)
+            {
+                _dataContext.Questions.Remove(question);
+                foreach (var answer in answers)
+                {
+                    _dataContext.Answers.Remove(answer);
+                }
+
+                _dataContext.SaveChanges();
+            }
+
+            var test = _dataContext.Tests.Include(t => t.Questions).ThenInclude(q => q.Answers)
+                .FirstOrDefault(t => t.Id == question.TestId);
+            var questions = _dataContext.Questions
+                .Include(q => q.Answers)
+                .Where(q => q.TestId == test.Id)
+                .ToList();
+            ProfileTestsModel newModel = new()
+            {
+                Id = user.Id,
+                Login = user.Login,
+                RealName = user.RealName,
+                Avatar = user.Avatar,
+                Email = user.Email,
+                Role = user.Role,
+                EditingTestId = test.Id,
+                Questions = questions,
+                EditingTestName = test.Name,
+                EditingTestDescription = test.Description,
+                EditingTestIcon = test.Icon
+            };
 
 
+            if (HttpContext.User.Identity is not null && HttpContext.User.Identity.IsAuthenticated)
+            {
+                String userLogin = HttpContext.User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
+                if (newModel.Login == userLogin)
+                {
+                    newModel.IsPersonal = true;
+                }
+            }
+
+            return View("EditQuestions", newModel);
+        }
+        catch
+        {
+            return NotFound();
+        }
+    }
     
     /// <summary>
     /// 

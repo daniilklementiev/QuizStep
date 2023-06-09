@@ -89,8 +89,35 @@
             </div>
         </div>
     </div>
-    <div>
-         <a class="btn btn-success" asp-action="AddQuestionView" asp-controller="Account" asp-route-id="@Model.EditingTestId">Додати нове питання</a> @* add new question*@
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">@Model.EditingTestName</h5>
+                    <form method="post" asp-action="EditTestProps">
+                        <p class="card-text">
+                            <div class="form-group">
+                                <label asp-for="@Model.EditingTestName" class="control-label" style="font-weight: bolder">Назва тесту:</label>
+                                <input asp-for="@Model.EditingTestName" class="form-control" placeholder="Введіть назву тесту"/>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="@Model.EditingTestDescription" class="control-label" style="font-weight: bolder">Опис тесту:</label>
+                                <input asp-for="@Model.EditingTestDescription" class="form-control" placeholder="Введіть назву тесту"/>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="@Model.EditingTestIcon" class="control-label" style="font-weight: bolder">Посилання на зображення:</label>
+                                <input asp-for="@Model.EditingTestIcon" class="form-control" placeholder="Введіть посилання на зображеня для тесту"/>
+                            </div>
+                        </p>
+                        <div class="card-footer d-flex flex-wrap">
+                            <input type="hidden" asp-for="@Model.EditingTestId" value="@Model.EditingTestId"/>
+                            <button class="btn btn-primary" type="submit">Зберігти зміни</button> @* add new question*@
+                            <a class="btn btn-primary ml-3" asp-action="AddQuestionView" asp-controller="Account" asp-route-id="@Model.EditingTestId">Додати нове питання</a> @* add new question*@
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="row">
         <div class="col-12 d-flex flex-wrap">
