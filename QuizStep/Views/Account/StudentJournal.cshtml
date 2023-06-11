@@ -1,4 +1,4 @@
-@model QuizStep.Models.UserModels.ProfileStudentsModel
+@model QuizStep.Models.UserModels.StudentTestModel
 @{
     ViewData["Title"] = "Profile";
 }
@@ -20,7 +20,7 @@
                         @if (@Model.Role == "Mentor")
                         {
                             <li>
-                                <a class="sidebar-item d-flex justify-content-between align-items-center" asp-action="ProfileTestsEdit" asp-controller="Account" asp-route-id="@Model.Login">
+                                <a class="sidebar-item d-flex justify-content-between align-items-center active" >
                                     Редагування тестів
                                     <span class="fas fa-copy"></span>
                                 </a>
@@ -29,14 +29,14 @@
                         @if (@Model.Role == "Student")
                         {
                             <li>
-                                <a class="sidebar-item d-flex justify-content-between align-items-center" asp-action="ProfileTests" asp-controller="Account" asp-route-id="@Model.Login">
+                                <a class="sidebar-item d-flex justify-content-between align-items-center active">
                                     Тести
                                     <span class="fas fa-copy"></span>
                                 </a>
                             </li>
                         }
                         <li>
-                            <a class="sidebar-item active d-flex justify-content-between align-items-center">
+                            <a class="sidebar-item d-flex justify-content-between align-items-center" asp-action="ProfileStudents" asp-controller="Account" asp-route-id="@Model.Login">
                                 Студенти
                                 <span class="fas fa-user"></span>
                             </a>
@@ -63,14 +63,14 @@
                     <div class="row">
                         <div class="col-12">
                             <div class="mb-3 bg-dark">
-                                <div class="card-background row">
+                                <div class="row">
                                     <div class="col-12">
-                                        <div class="row">
+                                        <div class="row card-background">
                                             <div class=" col-md-6 ml-auto mr-auto">
                                                 <div class="profiles p-3 my-4 rounded text-center shadow-sm">
                                                     <div class="avatars">
                                                         <a href="#">
-                                                            <img src="~/avatars/@Model.Avatar" alt="@Model.Login avatar" class="avatar-lg img-fluid" data-toggle="tooltip" data-placement="bottom" title="">
+                                                            <img src="~/avatars/@Model.Avatar" alt="@Model.Login avatar" class="avatar-lg img-fluid" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Edit avatar images">
                                                         </a>
                                                     </div>
                                                     <div class="names">
@@ -84,45 +84,28 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-12">
-                            @if (@Model.Role == "Student")
-                            {
-                                @foreach (var user in @Model.Students)
-                                {
-                                    @Html.DisplayFor(u => user, "UserCardStudent")
-                                    ;
-                                }
-                            }
-                            else if (@Model.Role == "Mentor")
-                            {
-                                @foreach (var user in @Model.Students)
-                                {
-                                    @Html.DisplayFor(u => user, "UserCardMentor")
-                                    ;
-                                }
-                            }
-                            else if (@Model.Role == "Admin")
-                            {
-                                @foreach (var user in @Model.Students)
-                                {
-                                    @Html.DisplayFor(u => user, "UserCardAdmin")
-                                    ;
-                                }
-                            }
-                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    <div class="row">
+        <div class="col-12 d-flex flex-wrap">
+            <h3 class="col-12">Тести @Model.StudentName</h3>
+            @foreach (var test in Model.Quizzes)
+            {
+                @Html.DisplayFor(t => test, "TestStudentTemplate")
+                ;
+            }
+        </div>
+    </div>
 </section>
+
+
 
 <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-
-<script>
-document.getElementById("mySelect").addEventListener("change", function () {
-        document.getElementById("myForm").submit();
-    });
-</script>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>

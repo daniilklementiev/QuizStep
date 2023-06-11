@@ -11,9 +11,9 @@ public class ProfileStudentsModel
     public String       Email              { get; set; } = null!;
     public String?      Avatar             { get; set; } = null!;
     public bool         IsPersonal { get; set; }
+    public String? TestName { get; set; } = null!;
 
     public List<StudentModel> Students { get; set; } = null!;
-    
     public int SelectedOption { get; set; }
     public List<SelectListItem> Options { get; set; }
     

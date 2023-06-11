@@ -14,7 +14,7 @@
         </div>
         <div class="card-footer d-flex justify-content-between">
             <a class="btn btn-primary" asp-action="EditQuestions" asp-controller="Account" asp-route-id="@Model.Id"><i class="fa fa-cog"></i></a> @* edit *@
-            <a class="btn btn-info" asp-action="" asp-controller="Account"><i class="fa fa-user-plus"></i></a> @* assign *@
+            <a class="btn btn-info" asp-action="AssignTest" asp-controller="Account" asp-route-id="@Model.Id"><i class="fa fa-user-plus"></i></a> @* assign *@
             <a class="btn btn-danger" asp-action="DeleteTest" asp-route-id="@Model.Id"><i class="fa fa-minus-circle"></i></a> @* delete *@
         </div>
     </div>

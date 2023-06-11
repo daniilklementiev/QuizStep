@@ -285,7 +285,7 @@ public class AccountController : Controller
                     Id = s.Id,
                     Login = s.Login,
                     Realname = s.RealName,
-                    Email = s.Email,
+                    Avatar = s.Avatar ?? "no_avatar.png",
                     Role = s.Role,
                     Tests = null!
                 }).ToList()
@@ -308,6 +308,238 @@ public class AccountController : Controller
         }
     }
 
+    public IActionResult ShowStudentTestsJournal([FromRoute] String id)
+    {
+        var thisUserStringId = HttpContext.Session.GetString("authUserId");
+        try
+        {
+            var thisUser = _dataContext.Users.FirstOrDefault(u => u.Id == Guid.Parse(thisUserStringId));
+            var quizzes = _dataContext.Tests.ToList();
+            var user = _dataContext.Users.FirstOrDefault(u => u.Id == Guid.Parse(id));
+            var journals = _dataContext.Journals.Where(j => j.UserId == user.Id).ToList();
+            var assignedTests = _dataContext.AssignedTests.Where(at => at.StudentId == user.Id).ToList();
+            StudentTestModel model = new()
+            {
+                Id = thisUser.Id,
+                Login = thisUser.Login,
+                RealName = thisUser.RealName,
+                Avatar = thisUser.Avatar,
+                Role = thisUser.Role,
+                StudentName = user.RealName,
+                Quizzes = quizzes
+                    .Where(t => journals.Any(j => j.TestId == t.Id) || assignedTests.Any(at => at.TestId == t.Id))
+                    .Select(t => new AllTestsModel()
+                    {
+                        Icon = t.Icon,
+                        Id = t.Id,
+                        MentorId = t.MentorId,
+                        Name = t.Name,
+                        IsPassed = journals.Any(j => j.IsPassed && j.TestId == t.Id),
+                        MentorName = t.Mentor?.RealName ?? String.Empty,
+                        QuestionsCount = _dataContext.Questions.Count(q => q.TestId == t.Id),
+                        Result = journals.FirstOrDefault(j => j.TestId == t.Id)?.Result,
+                    }).ToList()
+            };
+            return View("StudentJournal", model);
+        }
+        catch
+        {
+            return NotFound();
+        }
+    }
+
+    public IActionResult MakeUserMentor([FromRoute] String id)
+    {
+        var thisUserStringId = HttpContext.Session.GetString("authUserId");
+        try
+        {
+            var user = _dataContext.Users.FirstOrDefault(u => u.Id == Guid.Parse(id));
+            if (user.Role == "Student")
+            {
+                user.Role = "Mentor";
+                _dataContext.Entry(user).State = EntityState.Modified;
+                _dataContext.SaveChanges();
+            }
+
+            var thisUser = _dataContext.Users.FirstOrDefault(u => u.Id == Guid.Parse(thisUserStringId));
+            ProfileStudentsModel model = new()
+            {
+                Id = user.Id,
+                Login = user.Login,
+                RealName = user.RealName,
+                Avatar = user.Avatar,
+                Email = user.Email,
+                Role = user.Role,
+                Students = _dataContext.Users.Select(s => new StudentModel()
+                {
+                    Id = s.Id,
+                    Login = s.Login,
+                    Realname = s.RealName,
+                    Avatar = s.Avatar ?? "no_avatar.png",
+                    Role = s.Role,
+                    Tests = null!
+                }).ToList()
+            };
+
+            if (HttpContext.User.Identity is not null && HttpContext.User.Identity.IsAuthenticated)
+            {
+                String userLogin = HttpContext.User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
+                if (model.Login == userLogin)
+                {
+                    model.IsPersonal = true;
+                }
+            }
+
+            return RedirectToAction("ProfileStudents", "Account", new { id = thisUser.Login });
+        }
+        catch
+        {
+            return NotFound();
+        }
+    }
+
+    public IActionResult MakeUserStudent([FromRoute] String id)
+    {
+        var thisUserStringId = HttpContext.Session.GetString("authUserId");
+        try
+        {
+            var user = _dataContext.Users.FirstOrDefault(u => u.Id == Guid.Parse(id));
+            if (user.Role == "Mentor")
+            {
+                user.Role = "Student";
+                _dataContext.Entry(user).State = EntityState.Modified;
+                _dataContext.SaveChanges();
+            }
+
+            var thisUser = _dataContext.Users.FirstOrDefault(u => u.Id == Guid.Parse(thisUserStringId));
+            ProfileStudentsModel model = new()
+            {
+                Id = user.Id,
+                Login = user.Login,
+                RealName = user.RealName,
+                Avatar = user.Avatar,
+                Email = user.Email,
+                Role = user.Role,
+                Students = _dataContext.Users.Select(s => new StudentModel()
+                {
+                    Id = s.Id,
+                    Login = s.Login,
+                    Realname = s.RealName,
+                    Avatar = s.Avatar ?? "no_avatar.png",
+                    Role = s.Role,
+                    Tests = null!
+                }).ToList()
+            };
+
+            if (HttpContext.User.Identity is not null && HttpContext.User.Identity.IsAuthenticated)
+            {
+                String userLogin = HttpContext.User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
+                if (model.Login == userLogin)
+                {
+                    model.IsPersonal = true;
+                }
+            }
+
+            return RedirectToAction("ProfileStudents", "Account", new { id = thisUser.Login });
+        }
+        catch
+        {
+            return NotFound();
+        }
+    }
+
+    public IActionResult AssignTest([FromRoute] String id)
+    {
+        var userStringId = HttpContext.Session.GetString("authUserId");
+        try
+        {
+            var user = _dataContext.Users.FirstOrDefault(u => u.Id == Guid.Parse(userStringId));
+            var test = _dataContext.Tests.FirstOrDefault(t => t.Id == Guid.Parse(id));
+            // получаем общее количество пользователей в базе данных
+            if (user is not null)
+            {
+                ProfileStudentsModel model = new()
+                {
+                    Id = user.Id,
+                    Login = user.Login,
+                    RealName = user.RealName,
+                    Avatar = user.Avatar,
+                    Email = user.Email,
+                    Role = user.Role,
+                    TestName = test.Name,
+                    Students = _dataContext.Users.Where(s=>s.Role == "Student").Select(s => new StudentModel()
+                    {
+                        Id = s.Id,
+                        Login = s.Login,
+                        Realname = s.RealName,
+                        Avatar = s.Avatar ?? "no_avatar.png",
+                        Role = s.Role,
+                        AssignTestId = test.Id,
+                        Tests = null!
+                    }).ToList()
+                };
+
+                if (HttpContext.User.Identity is not null && HttpContext.User.Identity.IsAuthenticated)
+                {
+                    String userLogin = HttpContext.User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
+                    if (model.Login == userLogin)
+                    {
+                        model.IsPersonal = true;
+                    }
+                }
+
+                return View(model);
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+        catch
+        {
+            return NotFound();
+        }
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="id">user id</param>
+    /// <param name="testId">test id</param>
+    /// <returns></returns>
+    [HttpGet]
+    public IActionResult AssignTestToStudent(String id, String testId)
+    {
+        var userStringId = HttpContext.Session.GetString("authUserId");
+        try
+        {
+            var student = _dataContext.Users.FirstOrDefault(u => u.Id == Guid.Parse(id));
+            var test = _dataContext.Tests.FirstOrDefault(t => t.Id == Guid.Parse(testId));
+            var mentor = _dataContext.Users.FirstOrDefault(u => u.Id == Guid.Parse(userStringId));
+            var assignedTests = _dataContext.AssignedTests.Where(at => at.StudentId == student.Id && at.TestId == test.Id).ToList();
+            if (student is not null && test is not null && mentor is not null && assignedTests.Count == 0)
+            {
+                AssignedTest assignedTest = new()
+                {
+                    Id = Guid.NewGuid(),
+                    StudentId = student.Id,
+                    TestId = test.Id,
+                    MentorId = mentor.Id
+                };
+                _dataContext.AssignedTests.Add(assignedTest);
+                _dataContext.SaveChanges();
+                return RedirectToAction("ProfileTestsEdit", "Account", new { id = mentor.Login });
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+        catch
+        {
+            return NotFound();
+        }
+    }
 
     public IActionResult ProfileTests([FromRoute] String id)
     {
@@ -349,47 +581,54 @@ public class AccountController : Controller
 
     public IActionResult ProfileTestsEdit([FromRoute] String id)
     {
-        var user = _dataContext.Users.FirstOrDefault(u => u.Login == id);
-        if (user is not null)
+        try
         {
-            ProfileTestsModel model = new()
+            var user = _dataContext.Users.FirstOrDefault(u => u.Login == id);
+            if (user is not null)
             {
-                Id = user.Id,
-                Login = user.Login,
-                RealName = user.RealName,
-                Avatar = user.Avatar,
-                Email = user.Email,
-                Role = user.Role,
-                Tests = _dataContext.Tests.Where(t=>t.MentorId==user.Id).AsEnumerable().Select(t => new MentorTestModel()
-                {
-                    TestIcon = t.Icon,
-                    TestDescription = t.Description,
-                    Id = t.Id,
-                    MentorId = t.MentorId,
-                    TestTitle = t.Name,
-                    Questions = null!
-                }).ToList()
-            };
 
-
-            if (HttpContext.User.Identity is not null && HttpContext.User.Identity.IsAuthenticated)
-            {
-                String userLogin = HttpContext.User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
-                if (model.Login == userLogin)
+                ProfileTestsModel model = new()
                 {
-                    model.IsPersonal = true;
+                    Id = user.Id,
+                    Login = user.Login,
+                    RealName = user.RealName,
+                    Avatar = user.Avatar,
+                    Email = user.Email,
+                    Role = user.Role,
+                    Tests = _dataContext.Tests.Where(t => t.MentorId == user.Id).AsEnumerable().Select(t =>
+                        new MentorTestModel()
+                        {
+                            TestIcon = t.Icon,
+                            TestDescription = t.Description,
+                            Id = t.Id,
+                            MentorId = t.MentorId,
+                            TestTitle = t.Name,
+                            Questions = null!
+                        }).ToList()
+                };
+                if (HttpContext.User.Identity is not null && HttpContext.User.Identity.IsAuthenticated)
+                {
+                    String userLogin = HttpContext.User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
+                    if (model.Login == userLogin)
+                    {
+                        model.IsPersonal = true;
+                    }
                 }
-            }
 
-            return View("ProfileTests", model);
+                return View("ProfileTests", model);
+            }
+            else
+            {
+                return NotFound();
+            }
         }
-        else
+        catch
         {
             return NotFound();
         }
     }
-    
-    
+
+
     /// <summary>
     /// Test deleting from database 
     /// </summary>
@@ -438,15 +677,16 @@ public class AccountController : Controller
                     Avatar = user.Avatar,
                     Email = user.Email,
                     Role = user.Role,
-                    Tests = _dataContext.Tests.Where(t=>t.MentorId==user.Id).AsEnumerable().Select(t => new MentorTestModel()
-                    {
-                        TestIcon = t.Icon,
-                        TestDescription = t.Description,
-                        Id = t.Id,
-                        MentorId = t.MentorId,
-                        TestTitle = t.Name,
-                        Questions = null!
-                    }).ToList()
+                    Tests = _dataContext.Tests.Where(t => t.MentorId == user.Id).AsEnumerable().Select(t =>
+                        new MentorTestModel()
+                        {
+                            TestIcon = t.Icon,
+                            TestDescription = t.Description,
+                            Id = t.Id,
+                            MentorId = t.MentorId,
+                            TestTitle = t.Name,
+                            Questions = null!
+                        }).ToList()
                 };
 
 
@@ -470,15 +710,14 @@ public class AccountController : Controller
         {
             return NotFound();
         }
-       
     }
 
     public IActionResult EditQuestions([FromRoute] String id)
     {
-        
         try
         {
-            var user = _dataContext.Users.FirstOrDefault(u => u.Id == Guid.Parse(HttpContext.Session.GetString("authUserId")));
+            var user = _dataContext.Users.FirstOrDefault(u =>
+                u.Id == Guid.Parse(HttpContext.Session.GetString("authUserId")));
 
             if (user is not null)
             {
@@ -530,7 +769,7 @@ public class AccountController : Controller
             return NotFound();
         }
     }
-    
+
     public IActionResult EditTestProps(ProfileTestsModel model)
     {
         var test = _dataContext.Tests.FirstOrDefault(t => t.Id == model.EditingTestId);
@@ -540,8 +779,11 @@ public class AccountController : Controller
             var user = _dataContext.Users.FirstOrDefault(u => u.Id == Guid.Parse(userId));
             if (test is not null)
             {
-                if(!String.IsNullOrEmpty(model.EditingTestDescription)){}
-                    test.Description = model.EditingTestDescription;
+                if (!String.IsNullOrEmpty(model.EditingTestDescription))
+                {
+                }
+
+                test.Description = model.EditingTestDescription;
                 if (!String.IsNullOrEmpty(model.EditingTestName))
                     test.Name = model.EditingTestName;
                 if (String.IsNullOrEmpty(model.EditingTestIcon))
@@ -551,8 +793,8 @@ public class AccountController : Controller
                     test.Icon = model.EditingTestIcon;
                 _dataContext.Tests.Update(test);
                 _dataContext.SaveChanges();
-            
-            
+
+
                 var questions = _dataContext.Questions
                     .Include(q => q.Answers)
                     .Where(q => q.TestId == test.Id)
@@ -578,6 +820,7 @@ public class AccountController : Controller
                         newModel.IsPersonal = true;
                     }
                 }
+
                 return View("EditQuestions", newModel);
             }
             else
@@ -606,7 +849,7 @@ public class AccountController : Controller
                     return NotFound();
                 }
 
-                var testQuestions = _dataContext.Questions.Where(q=>q.TestId==test.Id).ToList();
+                var testQuestions = _dataContext.Questions.Where(q => q.TestId == test.Id).ToList();
                 ProfileTestsModel model = new()
                 {
                     Id = user.Id,
@@ -640,6 +883,7 @@ public class AccountController : Controller
                         model.IsPersonal = true;
                     }
                 }
+
                 return View(model);
             }
             else
@@ -670,7 +914,7 @@ public class AccountController : Controller
                 }
 
                 var questionId = Guid.NewGuid();
-                
+
                 List<QuestionAnswer> Answers = new();
                 foreach (var answer in model.EditingQuestion.Answers)
                 {
@@ -687,7 +931,7 @@ public class AccountController : Controller
                         Answers.Add(newAnswer);
                     }
                 }
-                
+
                 var question = new Question()
                 {
                     Id = questionId,
@@ -698,12 +942,12 @@ public class AccountController : Controller
                 };
 
                 _dataContext.Questions.Add(question);
-                
+
                 foreach (var answer in Answers)
                 {
                     _dataContext.Answers.Add(answer);
                 }
-                
+
                 _dataContext.SaveChanges();
 
                 var questions = _dataContext.Questions
@@ -731,6 +975,7 @@ public class AccountController : Controller
                         newModel.IsPersonal = true;
                     }
                 }
+
                 return View("EditQuestions", newModel);
             }
             else
@@ -743,7 +988,7 @@ public class AccountController : Controller
             return NotFound();
         }
     }
-    
+
     public IActionResult DeleteQuestion([FromRoute] String id)
     {
         var userId = HttpContext.Session.GetString("authUserId");
@@ -802,7 +1047,7 @@ public class AccountController : Controller
             return NotFound();
         }
     }
-    
+
     /// <summary>
     /// 
     /// </summary>
@@ -822,7 +1067,8 @@ public class AccountController : Controller
                     Name = model.TestTitle,
                     Description = model.TestDescription,
                     MentorId = user.Id,
-                    Icon = model.TestIcon ?? "https://img.freepik.com/premium-vector/clipboard-with-checklist-flat-style_183665-74.jpg?w=1060",
+                    Icon = model.TestIcon ??
+                           "https://img.freepik.com/premium-vector/clipboard-with-checklist-flat-style_183665-74.jpg?w=1060",
                     Journals = null!,
                     Mentor = user
                 });
@@ -837,15 +1083,16 @@ public class AccountController : Controller
                 Avatar = user.Avatar,
                 Email = user.Email,
                 Role = user.Role,
-                Tests = _dataContext.Tests.Where(t=>t.MentorId==user.Id).AsEnumerable().Select(t => new MentorTestModel()
-                {
-                    TestIcon = t.Icon,
-                    TestDescription = t.Description,
-                    Id = t.Id,
-                    MentorId = t.MentorId,
-                    TestTitle = t.Name,
-                    Questions = null!
-                }).ToList()
+                Tests = _dataContext.Tests.Where(t => t.MentorId == user.Id).AsEnumerable().Select(t =>
+                    new MentorTestModel()
+                    {
+                        TestIcon = t.Icon,
+                        TestDescription = t.Description,
+                        Id = t.Id,
+                        MentorId = t.MentorId,
+                        TestTitle = t.Name,
+                        Questions = null!
+                    }).ToList()
             };
 
             return View("ProfileTests", newModel);
@@ -853,7 +1100,7 @@ public class AccountController : Controller
 
         return NotFound();
     }
-    
+
     [HttpPost]
     public RedirectToActionResult AuthUser()
     {

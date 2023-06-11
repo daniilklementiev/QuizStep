@@ -33,14 +33,12 @@ public class HomeController : Controller
         try
         { 
             var userId = Guid.Parse(userIdString);
-            // var quizzes = _dataContext.Tests.ToList();
-            // var assignedTests = _dataContext.AssignedTests.Where(at => at.StudentId == userId).ToList();
-            // var filteredQuizzes = quizzes
-            //     .Where(t => journals.Any(j => j.TestId == t.Id) || assignedTests.Any(at => at.TestId == t.Id))
-            //     .AsEnumerable();
+            var assignedTests = _dataContext.AssignedTests.Where(at => at.StudentId == userId).ToList();
+            var tests = _dataContext.Tests.ToList();
+            var filteredTests = tests.Where(t => assignedTests.Any(at => at.TestId == t.Id)).ToList();
             MainViewModel model = new()
             {
-                Tests = _dataContext.Tests.Select(t => new QuizTestModel
+                Tests = filteredTests.Select(t => new QuizTestModel
                     {
                         Id = t.Id,
                         MentorId = t.MentorId,

@@ -14,7 +14,8 @@ public class StudentTestModel
     public bool IsPersonal { get; set; }
     public String Role { get; set; }
     public String?      Avatar             { get; set; } = null!;
-    
+    public String? StudentName { get; set; } = null!;
+
     public List<AllTestsModel> Quizzes { get; set; } = null!;
     
 

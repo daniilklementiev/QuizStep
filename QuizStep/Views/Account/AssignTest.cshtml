@@ -85,29 +85,11 @@
                             </div>
                         </div>
                         <div class="col-12">
-                            @if (@Model.Role == "Student")
+                            <h3>Призначення тесту "@Model.TestName"</h3>
+                            @foreach (var user in @Model.Students)
                             {
-                                @foreach (var user in @Model.Students)
-                                {
-                                    @Html.DisplayFor(u => user, "UserCardStudent")
-                                    ;
-                                }
-                            }
-                            else if (@Model.Role == "Mentor")
-                            {
-                                @foreach (var user in @Model.Students)
-                                {
-                                    @Html.DisplayFor(u => user, "UserCardMentor")
-                                    ;
-                                }
-                            }
-                            else if (@Model.Role == "Admin")
-                            {
-                                @foreach (var user in @Model.Students)
-                                {
-                                    @Html.DisplayFor(u => user, "UserCardAdmin")
-                                    ;
-                                }
+                                @Html.DisplayFor(u => user, "UserCardAssign")
+                                ;
                             }
                         </div>
                     </div>
