@@ -36,3 +36,44 @@ git clone https://github.com/daniilklementiev/QuizStep.git
 
 ## Ліцензія
 Цей проєкт ліцензований відповідно до ліцензії **[MIT](https://github.com/git/git-scm.com/blob/main/MIT-LICENSE.txt)**.
+
+___
+
+# QuizStep
+QuizStep is a web application developed using ASP.NET Core MVC, designed for students to take tests and teachers to create tests. It has a convenient user interface and functionality for effective testing and knowledge assessment.
+
+## Features.
+* Separation of students and teachers: students can take tests, and teachers can create and manage them.
+* Registration and authentication: users can create accounts and log in to access the functionality.
+* Create quizzes: Instructors can create quizzes with questions, multiple-choice and correct answers.
+* Taking tests: students can choose available tests and take them by selecting answer options.
+* Assessment of results: the system automatically evaluates students' results and displays them to teachers.
+
+## Requirements
+To run and develop the project, you need to install the following components:
+
+* .NET Core SDK - version 3.1 or higher
+* A development environment such as Visual Studio or Visual Studio Code
+
+## 
+* Clone the repository:
+```
+git clone https://github.com/daniilklementiev/QuizStep.git
+```
+* Open the project in the selected development environment.
+
+* Install the necessary NuGet packages specified in the file `QuizStep.csproj`.
+
+* Configure the database connection in the `appsettings.json` file using the settings you need.
+
+## Launching
+After installing and configuring the project, launch the application using the development environment of your choice.
+
+The application will be available at **http://localhost:5000** or **https://localhost:5001**.
+
+
+## Authors
+Daniil Klementiev - **[GitHub](https://github.com/daniilklementiev)**
+
+## License.
+This project is licensed under the **[MIT](https://github.com/git/git-scm.com/blob/main/MIT-LICENSE.txt)** license.
